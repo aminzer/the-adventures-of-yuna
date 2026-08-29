@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Студия озвучки — Приключения Юны</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎙️</text></svg>">
+  <style>
+    :root { --bg: #f6f1ea; --card: #fffdf9; --ink: #33302c; --soft: #8a827a; --line: #e7dfd4;
+            --accent: #d9536f; --ok: #3f9d6b; --warm: #f2b661; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.45 system-ui, "Segoe UI", sans-serif; }
+    .wrap { max-width: 880px; margin: 0 auto; padding: 24px 20px 48px; }
+    header { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+    h1 { font-size: 22px; margin: 0; }
+    .progress { display: flex; align-items: center; gap: 12px; color: var(--soft); }
+    .bar { width: 220px; height: 10px; background: var(--line); border-radius: 5px; overflow: hidden; }
+    .bar > i { display: block; height: 100%; background: var(--ok); width: 0; transition: width .3s; }
+    label.filter { display: flex; align-items: center; gap: 6px; color: var(--soft); cursor: pointer; }
+    a.game { padding: 9px 14px; border-radius: 12px; background: #fff; border: 1px solid var(--line); color: var(--ink); text-decoration: none; }
+    a.game:hover { transform: translateY(-1px); }
+    .card { margin-top: 20px; background: var(--card); border: 1px solid var(--line); border-radius: 18px;
+            padding: 28px 32px; box-shadow: 0 6px 24px rgba(60,40,20,.06); }
+    .meta { display: flex; justify-content: space-between; align-items: center; color: var(--soft); font-size: 14px; }
+    .badge { padding: 3px 10px; border-radius: 999px; font-size: 13px; background: var(--line); }
+    .badge.actor { background: #dff3e7; color: #1f6b43; }
+    .badge.robot { background: #f3e9d8; color: #8a5b12; }
+    .line { display: block; width: 100%; font: inherit; font-size: 30px; line-height: 1.35; margin: 22px 0 18px; min-height: 3.2em;
+            letter-spacing: .01em; color: var(--ink); background: transparent; border: 1px dashed transparent; border-radius: 10px;
+            padding: 6px 10px; resize: vertical; }
+    .line:hover { border-color: var(--line); }
+    .line:focus { outline: none; border-style: solid; border-color: var(--warm); background: #fff; }
+    .textrow { display: none; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; font-size: 14px; color: var(--soft); }
+    .textrow.show { display: flex; }
+    .textrow .orig { flex: 1 1 100%; }
+    .textrow .orig i { font-style: normal; color: var(--ink); }
+    .textrow button { padding: 7px 12px; font-size: 14px; }
+    .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    button { font: inherit; border: 1px solid var(--line); background: #fff; color: var(--ink); padding: 11px 18px;
+             border-radius: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: transform .05s; }
+    button:hover:not(:disabled) { transform: translateY(-1px); }
+    button:disabled { opacity: .45; cursor: default; }
+    button.rec { background: var(--accent); color: #fff; border-color: transparent; font-weight: 600; min-width: 150px; justify-content: center; }
+    button.rec.on { background: #b52f4b; animation: pulse 1.2s infinite; }
+    button.ok { background: var(--ok); color: #fff; border-color: transparent; font-weight: 600; }
+    button.nav { background: transparent; }
+    kbd { font: 12px/1 ui-monospace, monospace; background: rgba(0,0,0,.06); border-radius: 5px; padding: 3px 6px; color: var(--soft); }
+    @keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(181,47,75,.45);} 50% { box-shadow: 0 0 0 10px rgba(181,47,75,0);} }
+    .meter { margin: 18px 0 6px; height: 14px; border-radius: 7px; background: var(--line); overflow: hidden; }
+    .meter > i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--ok), var(--warm), var(--accent)); transition: width .06s linear; }
+    .take { margin-top: 18px; padding: 14px 16px; border-radius: 12px; background: #f7f3ec; display: none; }
+    .take.show { display: block; }
+    .take .row { margin-top: 10px; }
+    .status { min-height: 1.4em; margin-top: 14px; color: var(--soft); font-size: 14px; }
+    .status.err { color: var(--accent); }
+    footer { margin-top: 18px; color: var(--soft); font-size: 13px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+    .list { margin-top: 26px; columns: 2; column-gap: 24px; font-size: 13px; }
+    .list a { display: block; color: var(--soft); text-decoration: none; padding: 3px 0; break-inside: avoid; }
+    .list h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--soft); margin: 14px 0 4px; break-after: avoid; }
+    .list h3:first-child { margin-top: 0; }
+    .list a.done { color: #1f6b43; }
+    .list a.cur { color: var(--ink); font-weight: 600; }
+    @media (max-width: 640px) { .line { font-size: 24px; } .list { columns: 1; } .card { padding: 20px; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>🎙️ Студия озвучки</h1>
+      <div class="progress"><span id="count">…</span><div class="bar"><i id="barFill"></i></div></div>
+      <label class="filter"><input type="checkbox" id="onlyMissing"> только незаписанные</label>
+      <a class="game" href="/" target="yuna-game" title="Игра открывается во второй вкладке; после новых записей перезагрузите её">🎮 Проверить в игре</a>
+    </header>
+
+    <section class="card">
+      <div class="meta"><span id="pos"></span><span id="badge" class="badge"></span></div>
+      <textarea class="line" id="line" rows="2" spellcheck="true" title="Текст можно править — так он и появится в игре"></textarea>
+      <div class="textrow" id="textRow">
+        <span class="orig">Исходный текст: <i id="orig"></i></span>
+        <button id="btnSaveText">💾 Сохранить текст</button>
+        <button id="btnResetText">↩ Вернуть исходный</button>
+      </div>
+
+      <div class="row">
+        <button id="btnRec" class="rec">⏺ Записать</button>
+        <button id="btnRef" title="Как это читает синтезатор">🤖 Робот</button>
+        <button id="btnSaved" title="Утверждённая запись после очистки — так звучит в игре">🎧 Утверждённая</button>
+        <button id="btnRaw" title="Утверждённая запись как есть, до очистки">🎧 Оригинал</button>
+        <button id="btnDelete" title="Удалить утверждённую запись — снова будет робот">🗑</button>
+      </div>
+      <div class="meter"><i id="meter"></i></div>
+
+      <div class="take" id="take">
+        <div>Новый дубль <span id="takeLen" style="color:var(--soft)"></span></div>
+        <div class="row">
+          <button id="btnPlay">▶ Прослушать</button>
+          <button id="btnApprove" class="ok">✔ Утвердить</button>
+          <button id="btnRetry">↺ Ещё дубль</button>
+        </div>
+      </div>
+
+      <div class="status" id="status"></div>
+
+      <footer>
+        <div class="row">
+          <button id="btnPrev" class="nav">← Назад</button>
+          <button id="btnNext" class="nav">Далее →</button>
+        </div>
+        <div><kbd>R</kbd> запись/стоп &nbsp; <kbd>Space</kbd> прослушать &nbsp; <kbd>Enter</kbd> утвердить &nbsp; <kbd>←</kbd>/<kbd>→</kbd> строки &nbsp; <kbd>T</kbd> робот</div>
+      </footer>
+    </section>
+
+    <nav class="list" id="list"></nav>
+  </div>
+  <script type="module" src="/src/record/main.ts"></script>
+</body>
+</html>
