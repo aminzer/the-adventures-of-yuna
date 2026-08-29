@@ -2,11 +2,11 @@
 // Every draw function paints around a local origin (usually feet-center)
 // and expects the caller to have translated the context first.
 
-export type { Ctx, LunaPose, FriendPose } from './types';
+export type { Ctx, PlayerPose, FriendPose } from './types';
 export { rr, circle, ellipse } from './shapes';
 export { greyMix, hexMix } from './color';
 
-export { drawLuna } from './drawLuna';
+export { drawPlayer } from './drawPlayer';
 export { drawFriend } from './friends/drawFriend';
 export { drawItem } from './items/drawItem';
 export { drawNote } from './items/drawNote';

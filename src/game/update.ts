@@ -8,23 +8,23 @@ import { updateFadeOut } from './updateFadeOut';
 import { updateFadeIn } from './updateFadeIn';
 import { updateFinale } from './updateFinale';
 import { updateFriendHops } from './updateFriendHops';
-import { lunaCX } from './utils';
+import { playerCX } from './utils';
 
 export function update(gc: GameCtx, dt: number): void {
-  const luna = gc.luna;
+  const player = gc.player;
   gc.globalT += dt;
   gc.anyKeyFrame = gc.anyKeyPressed;
   gc.anyKeyPressed = false;
 
-  // Luna blink timer
-  luna.blinkT -= dt;
-  if (luna.blinkT <= 0) {
-    luna.blink = 1;
-    if (luna.blinkT < -0.15) {
-      luna.blink = 0;
-      luna.blinkT = 2.5 + Math.random() * 3;
+  // Yuna blink timer
+  player.blinkT -= dt;
+  if (player.blinkT <= 0) {
+    player.blink = 1;
+    if (player.blinkT < -0.15) {
+      player.blink = 0;
+      player.blinkT = 2.5 + Math.random() * 3;
     }
-  } else luna.blink = 0;
+  } else player.blink = 0;
 
   // butterfly (idle friend)
   if (gc.butterfly) {
@@ -54,13 +54,13 @@ export function update(gc: GameCtx, dt: number): void {
 
   // camera follows gently
   if (gc.state !== 'FINALE') {
-    let target = lunaCX(luna) - C.VIEW_W * 0.45;
+    let target = playerCX(player) - C.VIEW_W * 0.45;
     if ((gc.state === 'GIVING' || gc.state === 'BLOOMING') && gc.givingFriend) {
-      target = (lunaCX(luna) + gc.givingFriend.x) / 2 - C.VIEW_W / 2;
+      target = (playerCX(player) + gc.givingFriend.x) / 2 - C.VIEW_W / 2;
     }
     target = Math.max(0, Math.min(target, gc.levelW - C.VIEW_W));
     gc.camX += (target - gc.camX) * Math.min(1, dt * 4);
-    const targetY = Math.max(0, Math.min(luna.y + luna.h - C.VIEW_H * 0.65, gc.levelH - C.VIEW_H));
+    const targetY = Math.max(0, Math.min(player.y + player.h - C.VIEW_H * 0.65, gc.levelH - C.VIEW_H));
     gc.camY += (targetY - gc.camY) * Math.min(1, dt * 4);
   }
 

@@ -7,7 +7,7 @@ import type { GameCtx } from './context';
 import type { Bell } from './types';
 import { beginGiving } from './beginGiving';
 import { showCaption } from './showCaption';
-import { lunaCX } from './utils';
+import { playerCX } from './utils';
 
 function ringBell(gc: GameCtx, bell: Bell): void {
   bell.lit = 1;
@@ -43,13 +43,13 @@ function launchDemoNote(gc: GameCtx, larkX: number, larkY: number, bell: Bell): 
   });
 }
 
-// Song levels: the lark sings a short melody on the bell-flowers; Luna
+// Song levels: the lark sings a short melody on the bell-flowers; Yuna
 // jumps on the bells in the same order to give the song back.
 export function updateSong(gc: GameCtx, dt: number, landed: boolean): void {
   const level = LEVELS[gc.levelIndex];
   const melody = level.melody!;
   const lark = gc.friends[0];
-  const luna = gc.luna;
+  const player = gc.player;
 
   // the lark sings the demo: each note flies from its beak to a bell,
   // and the bell rings the moment the note lands
@@ -76,10 +76,10 @@ export function updateSong(gc: GameCtx, dt: number, landed: boolean): void {
     }
   }
 
-  // Luna lands on a bell → it rings (a toy forever, a puzzle until solved)
+  // Yuna lands on a bell → it rings (a toy forever, a puzzle until solved)
   if (!landed) return;
   for (const bell of gc.bells) {
-    if (Math.abs(lunaCX(luna) - bell.x) < C.BELL_RADIUS && Math.abs(luna.y + luna.h - bell.y) < 56) {
+    if (Math.abs(playerCX(player) - bell.x) < C.BELL_RADIUS && Math.abs(player.y + player.h - bell.y) < 56) {
       ringBell(gc, bell);
       if (lark && !lark.satisfied) {
         if (bell.idx === melody[gc.songPos]) {

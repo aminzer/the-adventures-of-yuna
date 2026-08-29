@@ -24,7 +24,7 @@ export const C = {
   // Magic wings (sky levels) — hold jump to flutter up, release to float down
   FLY_RISE: 175, // capped upward speed while holding jump
   FLY_ACCEL: 900, // how quickly the flutter reaches that speed
-  MAX_FALL_WINGS: 150, // with wings Luna never falls fast — she floats
+  MAX_FALL_WINGS: 150, // with wings Yuna never falls fast — she floats
   FLY_STAMINA: 3.5, // seconds of fluttering before the wings need a rest
   FLY_RECHARGE: 1.5, // seconds standing still to fully re-shimmer the wings
 
@@ -37,24 +37,24 @@ export const C = {
   WATER_JUMP_MULT: 0.55, // seabed hops are soft and floaty
   AIR_TIME: 9, // seconds of breath under water
   AIR_REFILL: 1.5, // seconds at the surface to refill it
-  BUBBLE_LIFT_SPEED: 300, // the friendly bubble carries Luna up this fast
+  BUBBLE_LIFT_SPEED: 300, // the friendly bubble carries Yuna up this fast
 
   // Song levels — jump on bell-flowers to replay the friend's melody
   BELL_RADIUS: 40, // landing this close to a bell plays it
   DEMO_NOTE_GAP: 0.7, // each demo note flies from the singer to its bell this long
   DEMO_REPEAT: 9, // re-sing the demo after this long without success
 
-  // Chase levels — the playful pup is "it" and runs after Luna
-  CHASE_START: 280, // the game of tag begins when Luna comes this close
-  PUP_SPEED: 185, // slightly slower than Luna — she can keep the game going,
+  // Chase levels — the playful pup is "it" and runs after Yuna
+  CHASE_START: 280, // the game of tag begins when Yuna comes this close
+  PUP_SPEED: 185, // slightly slower than Yuna — she can keep the game going,
   CATCH_RADIUS: 52, // …but any rest and she is happily caught (that's the win!)
   PUP_GRAVITY: 1400,
-  PUP_JUMP: 620, // enough to follow Luna up the 2-tile platforms
+  PUP_JUMP: 620, // enough to follow Yuna up the 2-tile platforms
   PUP_BOUNCE: 170, // the happy little bounds of its running gait
   PUP_ACCEL: 480, // momentum: it overshoots and skids, like a real puppy
-  PUP_AIM_WOBBLE: 190, // it aims NEAR Luna, not exactly at her (re-guessed ~1/s)
+  PUP_AIM_WOBBLE: 190, // it aims NEAR Yuna, not exactly at her (re-guessed ~1/s)
   PUP_DISTRACT_CHANCE: 0.3, // sometimes it stops to sniff — an escape window
-  PUP_CLIMB_TIME: 4, // seconds Luna can rest on a platform before it works out the climb
+  PUP_CLIMB_TIME: 4, // seconds Yuna can rest on a platform before it works out the climb
 
   // Interaction radii — everything is generous, auto pickup / auto give
   PICKUP_RADIUS: 56,
@@ -63,15 +63,15 @@ export const C = {
 
   // Sequence timings (seconds)
   DWELL_TIME: 1.3, // staying close this long completes a dwell deed (wake/hug)
-  GIVE_TIME: 0.95, // item arcs from Luna to the friend
+  GIVE_TIME: 0.95, // item arcs from Yuna to the friend
   BLOOM_TIME: 2.6, // color circle grows from the friend
   LEVEL_DONE_TIME: 2.8, // free celebration before fading to the next level
   FADE_TIME: 0.7,
   RESCUE_TIME: 2.2, // cloud ride back to safe ground
 
-  // Luna hitbox (visuals are drawn slightly larger — forgiving on purpose)
-  LUNA_W: 40,
-  LUNA_H: 44,
+  // Yuna hitbox (visuals are drawn slightly larger — forgiving on purpose)
+  PLAYER_W: 40,
+  PLAYER_H: 44,
 
   // Desaturation of the storm-greyed world (leave a hint of color: wistful, not bleak)
   DESAT_ALPHA: 0.85,

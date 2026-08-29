@@ -3,13 +3,13 @@ import { LEVELS } from '../levels';
 import { audio } from '../audio';
 import { satisfiedText } from '../texts';
 import type { GameCtx } from './context';
-import { settleLuna } from './settleLuna';
+import { settlePlayer } from './settlePlayer';
 import { showCaption } from './showCaption';
 import { easeOutCubic } from './utils';
 
 export function updateGiving(gc: GameCtx, dt: number): void {
   gc.stateT += dt;
-  settleLuna(gc, dt);
+  settlePlayer(gc, dt);
   const p = Math.min(1, gc.stateT / C.GIVE_TIME);
   const f = gc.givingFriend!;
   const it = gc.items.find((i) => i.state === 'tween');

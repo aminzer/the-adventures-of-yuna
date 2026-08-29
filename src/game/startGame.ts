@@ -40,7 +40,7 @@ export function startGame(canvas: HTMLCanvasElement): GameDebug {
 
   // Read-only debug handle (used by the headless test tools; harmless in the browser).
   return {
-    luna: gc.luna,
+    player: gc.player,
     items: () => gc.items,
     friends: () => gc.friends,
     state: () => gc.state,

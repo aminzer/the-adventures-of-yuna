@@ -15,10 +15,10 @@ export interface Friend {
   fleeing?: boolean; // chase levels: the pup is mid-scamper
   vy?: number; // chase levels: the pup really jumps and falls
   vx?: number; // chase levels: run momentum (it overshoots and skids)
-  aimOffset?: number; // chase levels: where it THINKS Luna is going
+  aimOffset?: number; // chase levels: where it THINKS Yuna is going
   retargetIn?: number; // chase levels: seconds until its next guess
   pauseFor?: number; // chase levels: seconds of being adorably distracted
-  upFor?: number; // chase levels: how long Luna has been up on a platform
+  upFor?: number; // chase levels: how long Yuna has been up on a platform
 }
 
 export interface Bell {
@@ -84,7 +84,7 @@ export interface Rescue {
   ty: number;
 }
 
-export interface Luna {
+export interface Player {
   x: number;
   y: number;
   vx: number;
@@ -97,7 +97,7 @@ export interface Luna {
   hasWings: boolean;
   flyCharge: number; // 0..1 — wing sparkle; drains while fluttering, refills at rest
   air: number; // 0..1 — breath under water
-  bubbleLift: { t: number } | null; // the friendly bubble carrying Luna up for air
+  bubbleLift: { t: number } | null; // the friendly bubble carrying Yuna up for air
   carrying: Item | null;
   rescue: Rescue | null;
   safeX: number;
@@ -122,7 +122,7 @@ export interface Bloom {
 
 /** Read-only view of the running game, used by the headless test tools. */
 export interface GameDebug {
-  luna: Luna;
+  player: Player;
   items: () => Item[];
   friends: () => Friend[];
   state: () => GameState;

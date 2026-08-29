@@ -1,6 +1,6 @@
 export type Ctx = CanvasRenderingContext2D;
 
-export interface LunaPose {
+export interface PlayerPose {
   t: number;
   walk: number; // 0..1
   facing: 1 | -1;

@@ -18,7 +18,7 @@ export function updateLevelDone(gc: GameCtx, dt: number): void {
       t: 0,
     });
   }
-  // Luna is controllable during the celebration — hop around in the color!
+  // Yuna is controllable during the celebration — hop around in the color!
   updatePlaying(gc, dt);
   if (gc.stateT > C.LEVEL_DONE_TIME || (gc.anyKeyFrame && gc.stateT > 1.5)) {
     gc.state = 'FADE_OUT';

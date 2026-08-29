@@ -8,7 +8,7 @@ export function loadLevel(gc: GameCtx, i: number): void {
   const T = C.TILE;
   const L = LEVELS[i];
   const map = L.map;
-  const luna = gc.luna;
+  const player = gc.player;
   gc.gridRows = map.length;
   gc.gridCols = map[0].length;
   gc.levelW = gc.gridCols * T;
@@ -32,10 +32,10 @@ export function loadLevel(gc: GameCtx, i: number): void {
   gc.airWarned = false;
   gc.wingsTiredShown = false;
   gc.prevHeadUnder = false;
-  luna.hasWings = false;
-  luna.flyCharge = 1;
-  luna.air = 1;
-  luna.bubbleLift = null;
+  player.hasWings = false;
+  player.flyCharge = 1;
+  player.air = 1;
+  player.bubbleLift = null;
   gc.introStep = 0;
   gc.introT = 0;
   if (L.practice) gc.desat = 0; // home is still sunny — the grey world waits
@@ -51,15 +51,15 @@ export function loadLevel(gc: GameCtx, i: number): void {
       if (ch === '#') gc.grid[r * gc.gridCols + c] = 1;
       else if (ch === '=') gc.grid[r * gc.gridCols + c] = 2;
       else if (ch === 'P') {
-        luna.x = cx - luna.w / 2;
-        luna.y = cellBottom - luna.h;
-        luna.vx = 0;
-        luna.vy = 0;
-        luna.facing = 1;
-        luna.carrying = null;
-        luna.rescue = null;
-        luna.safeX = luna.x;
-        luna.safeY = luna.y;
+        player.x = cx - player.w / 2;
+        player.y = cellBottom - player.h;
+        player.vx = 0;
+        player.vy = 0;
+        player.facing = 1;
+        player.carrying = null;
+        player.rescue = null;
+        player.safeX = player.x;
+        player.safeY = player.y;
       } else if (ch === 'F') {
         gc.friends.push({ kind: L.friend, x: cx, y: cellBottom, satisfied: false, hop: 0, hopV: 0, bounce: 0, dwellT: 0, t: Math.random() * 9 });
       } else if (ch === 'I' && L.item) {
@@ -75,6 +75,6 @@ export function loadLevel(gc: GameCtx, i: number): void {
       }
     }
   }
-  gc.camX = Math.max(0, Math.min(luna.x - C.VIEW_W * 0.4, gc.levelW - C.VIEW_W));
+  gc.camX = Math.max(0, Math.min(player.x - C.VIEW_W * 0.4, gc.levelW - C.VIEW_W));
   gc.camY = Math.max(0, gc.levelH - C.VIEW_H);
 }

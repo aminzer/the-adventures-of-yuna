@@ -1,10 +1,10 @@
-import type { Ctx, LunaPose } from './types';
+import type { Ctx, PlayerPose } from './types';
 import { circle, ellipse } from './shapes';
 import { drawSparkle } from './drawSparkle';
 
 const MANE = ['#ff9ab5', '#ffc98a', '#fff3a0', '#a5e6b0', '#9ecbff', '#d5a8ff'];
 
-export function drawLuna(g: Ctx, o: LunaPose): void {
+export function drawPlayer(g: Ctx, o: PlayerPose): void {
   g.save();
   if (o.facing < 0) g.scale(-1, 1);
   const t = o.t;
@@ -13,7 +13,7 @@ export function drawLuna(g: Ctx, o: LunaPose): void {
   g.rotate(tilt);
   g.translate(0, -bob);
 
-  // magic wings — raised proudly above Luna's back (behind everything else).
+  // magic wings — raised proudly above Yuna's back (behind everything else).
   // Their golden edge fades as the flying sparkle runs low.
   if (o.wings) {
     const charge = o.wingCharge ?? 1;

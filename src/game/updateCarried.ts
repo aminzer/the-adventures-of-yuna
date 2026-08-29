@@ -1,12 +1,12 @@
 import type { GameCtx } from './context';
-import { lunaCX } from './utils';
+import { playerCX } from './utils';
 
 export function updateCarried(gc: GameCtx): void {
-  const luna = gc.luna;
-  const it = luna.carrying;
+  const player = gc.player;
+  const it = player.carrying;
   if (!it) return;
-  const tx = lunaCX(luna) - luna.facing * 17;
-  const ty = luna.y - 28 + Math.sin(gc.globalT * 4) * 3;
+  const tx = playerCX(player) - player.facing * 17;
+  const ty = player.y - 28 + Math.sin(gc.globalT * 4) * 3;
   it.x += (tx - it.x) * 0.18;
   it.y += (ty - it.y) * 0.18;
 }

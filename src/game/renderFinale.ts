@@ -27,7 +27,7 @@ export function renderFinale(gc: GameCtx): void {
 
   art.drawRainbow(ctx, gc.colorsRestored, C.VIEW_W, true);
 
-  // every star Luna collected on her journey now shines in this sky —
+  // every star Yuna collected on her journey now shines in this sky —
   // exactly as many as she gathered. They fly up from their old HUD row,
   // one by one, to their evenly spread places in the night (drawn in front
   // of the rainbow so every single one stays countable)
@@ -60,8 +60,8 @@ export function renderFinale(gc: GameCtx): void {
 
   const bob = (ph: number): number => Math.abs(Math.sin(gc.finaleT * 3 + ph)) * 14;
 
-  // every friend Luna helped celebrates with her — one per completed level.
-  // The baby star came down to the party too, right beside Luna — so the
+  // every friend Yuna helped celebrates with her — one per completed level.
+  // The baby star came down to the party too, right beside Yuna — so the
   // night sky above holds ONLY the collected stars, exactly countable.
   const cast: Array<{ kind: FriendKind; x: number; ph: number }> = [
     { kind: 'bunny', x: 250, ph: 0 },
@@ -83,11 +83,11 @@ export function renderFinale(gc: GameCtx): void {
     ctx.restore();
   }
 
-  // Luna in the middle (with her magic wings, if she earned them)
+  // Yuna in the middle (with her magic wings, if she earned them)
   ctx.save();
   ctx.translate(470, 428);
-  art.drawLuna(ctx, {
-    t: gc.globalT, walk: 0.4, facing: 1, onGround: true, vy: 0, blink: gc.luna.blink,
+  art.drawPlayer(ctx, {
+    t: gc.globalT, walk: 0.4, facing: 1, onGround: true, vy: 0, blink: gc.player.blink,
     wings: gc.colorsRestored >= 8, rising: false,
   });
   ctx.restore();

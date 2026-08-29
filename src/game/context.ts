@@ -1,5 +1,5 @@
 import { C } from '../config';
-import type { Bell, Bloom, Butterfly, Caption, Decor, Friend, GameState, Item, Luna, Particle, Star, Wings } from './types';
+import type { Bell, Bloom, Butterfly, Caption, Decor, Friend, GameState, Item, Player, Particle, Star, Wings } from './types';
 
 // All mutable game state, shared by every update/render function.
 export interface GameCtx {
@@ -48,7 +48,7 @@ export interface GameCtx {
   butterfly: Butterfly | null;
   finaleT: number;
   wings: Wings | null;
-  luna: Luna;
+  player: Player;
 
   // song levels
   bells: Bell[];
@@ -136,9 +136,9 @@ export function createGameCtx(canvas: HTMLCanvasElement): GameCtx {
     butterfly: null,
     finaleT: 0,
     wings: null,
-    luna: {
+    player: {
       x: 0, y: 0, vx: 0, vy: 0,
-      w: C.LUNA_W, h: C.LUNA_H,
+      w: C.PLAYER_W, h: C.PLAYER_H,
       facing: 1, onGround: false, coyote: 0,
       hasWings: false, flyCharge: 1, air: 1, bubbleLift: null,
       carrying: null, rescue: null,

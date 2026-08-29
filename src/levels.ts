@@ -5,12 +5,12 @@
 //   .  empty sky
 //   #  solid ground block (grass on top)
 //   =  floating platform (solid)
-//   P  Luna's start position
+//   P  Yuna's start position
 //   F  a sad friend (which animal comes from the level's `friend` field;
 //      levels may have several — e.g. the squirrel siblings)
 //   I  the item the friend wishes for (fetch levels only; one per friend)
 //   *  sparkle star (optional collectible, purely for joy)
-//   W  magic wings pickup — Luna can fly for the rest of the level
+//   W  magic wings pickup — Yuna can fly for the rest of the level
 //      (hold jump to flutter up, release to float gently down)
 //   B  bell-flower (song levels) — jump on it to play its note
 //   T  tree (decoration)
@@ -31,7 +31,7 @@
 //   - gaps in the ground are at most 3 tiles wide
 //   - platforms are at most 3 tiles above whatever you jump from
 //   - platforms never overhang a gap's jump runway (head-bonk trap)
-//   - falling into a gap is always safe: the friendly cloud carries Luna back
+//   - falling into a gap is always safe: the friendly cloud carries Yuna back
 //   - chase levels have no gaps at all (the pup only knows how to run)
 // `npm run check:levels` verifies all of this.
 
@@ -252,8 +252,8 @@ export const LEVELS: LevelDef[] = [
   },
   {
     // The bonus sky level: the storm also knocked a baby star out of the
-    // sky. The little bird Luna once helped brings her magic wings, and
-    // Luna flies up through the clouds to return the baby star's golden
+    // sky. The little bird Yuna once helped brings her magic wings, and
+    // Yuna flies up through the clouds to return the baby star's golden
     // glow. Kindness comes back.
     name: 'gold',
     music: 'sky',
@@ -289,7 +289,7 @@ export const LEVELS: LevelDef[] = [
   },
   {
     // Music level: the lark forgot its song. It is a single-screen "stage" —
-    // the lark, all the bells and Luna are always visible together, so the
+    // the lark, all the bells and Yuna are always visible together, so the
     // child can watch the notes fly from the bird's beak onto the bells,
     // then jump on them in the same order to give the song back.
     name: 'song',
@@ -318,7 +318,7 @@ export const LEVELS: LevelDef[] = [
   },
   {
     // Underwater level: dive for the pearl, and swim up for air before
-    // the bubbles over Luna's head run out. Running out is never scary —
+    // the bubbles over Yuna's head run out. Running out is never scary —
     // a friendly bubble simply carries her to the surface.
     name: 'water',
     music: 'sea',
@@ -345,7 +345,7 @@ export const LEVELS: LevelDef[] = [
   },
   {
     // Chase level: the puppy wants to play tag — and HE is "it"! He bounds
-    // after Luna; being caught is the happy ending, so she can run for fun
+    // after Yuna; being caught is the happy ending, so she can run for fun
     // as long as she likes and simply stop when she's ready.
     name: 'chase',
     music: 'playful',

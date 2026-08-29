@@ -5,9 +5,9 @@ import type { GameCtx } from './context';
 import { beginGiving } from './beginGiving';
 import { showCaption } from './showCaption';
 import { solid } from './solid';
-import { dist, lunaCX, lunaCY } from './utils';
+import { dist, playerCX, playerCY } from './utils';
 
-// Chase levels: the puppy is "it" — it bounds happily after Luna, jumping
+// Chase levels: the puppy is "it" — it bounds happily after Yuna, jumping
 // up the platforms right behind her. She is a little faster, so she can keep
 // the game going as long as she likes (or hop right over it to turn around);
 // the moment she rests, she is caught — and being caught IS the joyful
@@ -16,18 +16,18 @@ export function updateChase(gc: GameCtx, dt: number): void {
   const pup = gc.friends[0];
   if (!pup || pup.satisfied) return;
   const T = C.TILE;
-  const luna = gc.luna;
-  const lx = lunaCX(luna);
+  const player = gc.player;
+  const lx = playerCX(player);
   const dx = lx - pup.x;
 
-  // the game of tag begins when Luna comes close enough
+  // the game of tag begins when Yuna comes close enough
   if (!pup.fleeing && Math.abs(dx) < C.CHASE_START) {
     pup.fleeing = true; // (here it means: the pup is running)
     audio.play('bark');
     showCaption(gc, TEXTS.chaseOn, 2.5);
   }
 
-  // real little physics, so the pup can follow Luna up and down platforms
+  // real little physics, so the pup can follow Yuna up and down platforms
   const PUP_HEAD = 42; // how tall the pup stands
   const pupCol = Math.floor(pup.x / T);
   pup.vy = (pup.vy ?? 0) + C.PUP_GRAVITY * dt;
@@ -51,9 +51,9 @@ export function updateChase(gc: GameCtx, dt: number): void {
 
   if (pup.fleeing) {
     // a real puppy's chase is enthusiastic but imperfect: every second or so
-    // it guesses where Luna is going (aiming only NEAR her), it overshoots
+    // it guesses where Yuna is going (aiming only NEAR her), it overshoots
     // and skids on its momentum, and sometimes a smell is just too
-    // interesting — it stops to sniff, and Luna slips away
+    // interesting — it stops to sniff, and Yuna slips away
     pup.retargetIn = (pup.retargetIn ?? 0) - dt;
     if (pup.retargetIn <= 0) {
       pup.retargetIn = 0.7 + Math.random();
@@ -78,11 +78,11 @@ export function updateChase(gc: GameCtx, dt: number): void {
 
     // a platform is a real (but temporary) refuge: the pup needs a while to
     // work out the climb, and it can never jump THROUGH the platform itself.
-    // It only "studies the problem" while Luna is settled up there — her
+    // It only "studies the problem" while Yuna is settled up there — her
     // jumping around doesn't count (and doesn't reset its progress either).
-    const lunaFeet = luna.y + luna.h;
-    if (lunaFeet < pup.y - 40) {
-      if (luna.onGround) pup.upFor = (pup.upFor ?? 0) + dt;
+    const playerFeet = player.y + player.h;
+    if (playerFeet < pup.y - 40) {
+      if (player.onGround) pup.upFor = (pup.upFor ?? 0) + dt;
     } else {
       pup.upFor = 0;
     }
@@ -96,7 +96,7 @@ export function updateChase(gc: GameCtx, dt: number): void {
           break;
         }
       }
-      if (lunaFeet < pup.y - 40 && Math.abs(dx) < 180 && airClear && (pup.upFor ?? 0) > C.PUP_CLIMB_TIME) {
+      if (playerFeet < pup.y - 40 && Math.abs(dx) < 180 && airClear && (pup.upFor ?? 0) > C.PUP_CLIMB_TIME) {
         pup.vy = -C.PUP_JUMP; // finally worked it out — up it goes!
       } else if (Math.abs(pup.vx ?? 0) > 40 && airClear) {
         pup.vy = -C.PUP_BOUNCE; // the happy bounding gait
@@ -108,7 +108,7 @@ export function updateChase(gc: GameCtx, dt: number): void {
   }
 
   // caught! (small radius, so hopping over the pup is a real escape)
-  if (dist(lx, lunaCY(luna), pup.x, pup.y - 24) < C.CATCH_RADIUS) {
+  if (dist(lx, playerCY(player), pup.x, pup.y - 24) < C.CATCH_RADIUS) {
     beginGiving(gc, pup);
   }
 }

@@ -8,12 +8,12 @@ import { ensureLayer } from './ensureLayer';
 import { renderSkyAndHills } from './renderSkyAndHills';
 import { renderParticles } from './renderParticles';
 import { renderUI } from './renderUI';
-import { lunaCX } from './utils';
+import { playerCX } from './utils';
 
 export function renderWorld(gc: GameCtx): void {
   const ctx = gc.ctx;
   const T = C.TILE;
-  const luna = gc.luna;
+  const player = gc.player;
   renderSkyAndHills(gc);
 
   // ---- world layer, on its own offscreen buffer: drawn in full color, then
@@ -68,8 +68,8 @@ export function renderWorld(gc: GameCtx): void {
     og.translate(f.x, f.y);
     const squash = 1 + f.bounce * 0.12 * Math.sin(f.bounce * 12);
     og.scale(2 - squash, squash);
-    // the puppy always turns toward Luna — waiting for her or chasing her
-    const facing: 1 | -1 = lunaCX(luna) < f.x ? -1 : 1;
+    // the puppy always turns toward Yuna — waiting for her or chasing her
+    const facing: 1 | -1 = playerCX(player) < f.x ? -1 : 1;
     const singing = f.kind === 'lark' && gc.songDemo.step >= 0;
     art.drawFriend(og, f.kind, { t: f.t, happy: f.satisfied, hop: f.hop, facing, singing });
     og.restore();
@@ -195,36 +195,36 @@ export function renderWorld(gc: GameCtx): void {
     }
   }
 
-  // rescue cloud under Luna
-  if (luna.rescue) {
+  // rescue cloud under Yuna
+  if (player.rescue) {
     ctx.save();
-    ctx.translate(lunaCX(luna), luna.y + luna.h + 6);
+    ctx.translate(playerCX(player), player.y + player.h + 6);
     art.drawRescueCloud(ctx, gc.globalT);
     ctx.restore();
   }
 
-  // Luna — a walking splash of color in the grey world
-  const inWater = level.water !== undefined && luna.y + 12 > level.water * T;
+  // Yuna — a walking splash of color in the grey world
+  const inWater = level.water !== undefined && player.y + 12 > level.water * T;
   ctx.save();
-  ctx.translate(lunaCX(luna), luna.y + luna.h);
-  art.drawLuna(ctx, {
+  ctx.translate(playerCX(player), player.y + player.h);
+  art.drawPlayer(ctx, {
     t: gc.globalT,
-    walk: luna.walkAmt,
-    facing: luna.facing,
-    onGround: luna.onGround || !!luna.rescue,
-    vy: luna.vy,
-    blink: luna.blink,
-    wings: luna.hasWings,
-    rising: luna.hasWings && !luna.onGround && luna.vy < -20,
-    wingCharge: luna.flyCharge,
+    walk: player.walkAmt,
+    facing: player.facing,
+    onGround: player.onGround || !!player.rescue,
+    vy: player.vy,
+    blink: player.blink,
+    wings: player.hasWings,
+    rising: player.hasWings && !player.onGround && player.vy < -20,
+    wingCharge: player.flyCharge,
     swimming: inWater,
   });
   ctx.restore();
 
-  // the friendly bubble carrying Luna up for a breath
-  if (luna.bubbleLift) {
+  // the friendly bubble carrying Yuna up for a breath
+  if (player.bubbleLift) {
     ctx.save();
-    ctx.translate(lunaCX(luna), luna.y + 16);
+    ctx.translate(playerCX(player), player.y + 16);
     ctx.fillStyle = 'rgba(175,220,255,0.3)';
     art.circle(ctx, 0, 0, 48);
     ctx.fill();

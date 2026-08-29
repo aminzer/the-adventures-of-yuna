@@ -2,7 +2,7 @@ import type { Ctx } from '../types';
 import { circle, ellipse } from '../shapes';
 import { drawSparkle } from '../drawSparkle';
 
-// The wings pickup: a glowing pair of little wings waiting for Luna.
+// The wings pickup: a glowing pair of little wings waiting for Yuna.
 export function drawWingsPickup(g: Ctx, t: number): void {
   const glow = g.createRadialGradient(0, 0, 3, 0, 0, 26);
   glow.addColorStop(0, 'rgba(255,240,180,0.55)');

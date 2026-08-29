@@ -28,12 +28,12 @@ export function makeBot(debug: GameDebug, listeners: Record<string, Listener[]>)
 
   return {
     think(simT: number) {
-      const luna = debug.luna;
+      const player = debug.player;
 
       // riding the rescue cloud or the breath bubble: sit calmly, and walk a
       // little before the next hop after landing (bouncing straight off the
       // drop point just repeats the same doomed arc forever)
-      if (luna.rescue || luna.bubbleLift) {
+      if (player.rescue || player.bubbleLift) {
         lastJump = simT;
         setKey('ArrowRight', false);
         setKey('ArrowLeft', false);
@@ -41,7 +41,7 @@ export function makeBot(debug: GameDebug, listeners: Record<string, Listener[]>)
         return;
       }
 
-      const cx = luna.x + 20;
+      const cx = player.x + 20;
       const level = LEVELS[debug.levelIndex()];
 
       // song levels: walk to the next bell of the melody and hop on it —
@@ -55,7 +55,7 @@ export function makeBot(debug: GameDebug, listeners: Record<string, Listener[]>)
             const dx = bell.x - cx;
             setKey('ArrowRight', dx > 8);
             setKey('ArrowLeft', dx < -8);
-            if (Math.abs(dx) <= 8 && luna.onGround && simT - lastJump > 0.6) {
+            if (Math.abs(dx) <= 8 && player.onGround && simT - lastJump > 0.6) {
               lastJump = simT;
               setKey('Space', true);
             }
@@ -66,14 +66,14 @@ export function makeBot(debug: GameDebug, listeners: Record<string, Listener[]>)
       }
 
       const byDistance = <T extends { x: number }>(list: T[]): T | undefined =>
-        list.slice().sort((a, b) => Math.abs(a.x - luna.x) - Math.abs(b.x - luna.x))[0];
+        list.slice().sort((a, b) => Math.abs(a.x - player.x) - Math.abs(b.x - player.x))[0];
       const item = byDistance(debug.items().filter((i) => i.state === 'world'));
       const friend = byDistance(debug.friends().filter((f) => !f.satisfied));
       const wings = debug.wings();
       let tx: number | null = null;
       let ty: number | null = null;
       if (wings && !wings.taken) { tx = wings.x; ty = wings.y; } // wings first — nothing else is reachable
-      else if (luna.carrying && friend) { tx = friend.x; ty = friend.y; }
+      else if (player.carrying && friend) { tx = friend.x; ty = friend.y; }
       else if (item) { tx = item.x; ty = item.y; }
       else if (friend) { tx = friend.x; ty = friend.y; }
       if (tx === null) {
@@ -85,16 +85,16 @@ export function makeBot(debug: GameDebug, listeners: Record<string, Listener[]>)
       // with magic wings, flying is easy: steer sideways, hold jump to rise
       // until level with the goal, release to float down onto it — but rest
       // on whatever you're standing on until the wing sparkle is back
-      if (luna.hasWings && ty !== null && ty < luna.y + 60) {
-        const wantRise = luna.y + 22 > ty - 6;
-        if (luna.onGround && wantRise && luna.flyCharge < 0.95) {
+      if (player.hasWings && ty !== null && ty < player.y + 60) {
+        const wantRise = player.y + 22 > ty - 6;
+        if (player.onGround && wantRise && player.flyCharge < 0.95) {
           // tired wings: stand still and let them re-shimmer
           setKey('ArrowRight', false);
           setKey('ArrowLeft', false);
           setKey('Space', false);
           return;
         }
-        if (!luna.onGround && luna.flyCharge <= 0.03) {
+        if (!player.onGround && player.flyCharge <= 0.03) {
           // out of sparkle mid-air: float down onto something, keep steering
           setKey('ArrowRight', tx > cx + 10);
           setKey('ArrowLeft', tx < cx - 10);
@@ -108,7 +108,7 @@ export function makeBot(debug: GameDebug, listeners: Record<string, Listener[]>)
           setKey('Space', true);
           return;
         }
-        if (wantRise && !luna.onGround && luna.vy > -8) blockedN++;
+        if (wantRise && !player.onGround && player.vy > -8) blockedN++;
         else blockedN = 0;
         if (blockedN > 7) {
           blockedN = 0;
@@ -122,7 +122,7 @@ export function makeBot(debug: GameDebug, listeners: Record<string, Listener[]>)
       }
 
       // standing next to a friend is the goal itself (dwell deeds) — be still
-      if (!item && friend && Math.abs(friend.x - cx) < 40 && Math.abs(friend.y - (luna.y + 22)) < 60) {
+      if (!item && friend && Math.abs(friend.x - cx) < 40 && Math.abs(friend.y - (player.y + 22)) < 60) {
         setKey('ArrowRight', false);
         setKey('ArrowLeft', false);
         setKey('Space', false);
@@ -133,7 +133,7 @@ export function makeBot(debug: GameDebug, listeners: Record<string, Listener[]>)
       // bonks the head — back off for a run-up, then jump while running in
       // from the side. (When the goal is still far away, fall through to
       // normal travel so edge sense keeps working on the way there.)
-      if (ty !== null && ty < luna.y - 40 && luna.onGround && Math.abs(tx - cx) < 240) {
+      if (ty !== null && ty < player.y - 40 && player.onGround && Math.abs(tx - cx) < 240) {
         const dx = tx - cx;
         const adx = Math.abs(dx);
         if (adx < 90) {
@@ -155,7 +155,7 @@ export function makeBot(debug: GameDebug, listeners: Record<string, Listener[]>)
 
       // the friend is waiting right below us (we're camped on a platform
       // above it) — step off the ledge instead of standing there forever
-      if (!item && friend && luna.onGround && friend.y > luna.y + luna.h + 40 && Math.abs(tx - cx) < 30) {
+      if (!item && friend && player.onGround && friend.y > player.y + player.h + 40 && Math.abs(tx - cx) < 30) {
         setKey('ArrowRight', true);
         setKey('ArrowLeft', false);
         setKey('Space', false);
@@ -169,9 +169,9 @@ export function makeBot(debug: GameDebug, listeners: Record<string, Listener[]>)
       // (like a child learns: you jump when you reach the edge)
       const dir = tx > cx + 10 ? 1 : tx < cx - 10 ? -1 : 0;
       let mustJump = false;
-      if (dir !== 0 && luna.onGround) {
-        const aheadX = dir > 0 ? luna.x + luna.w + 30 : luna.x - 30;
-        const feetY = luna.y + luna.h + 6;
+      if (dir !== 0 && player.onGround) {
+        const aheadX = dir > 0 ? player.x + player.w + 30 : player.x - 30;
+        const feetY = player.y + player.h + 6;
         // no ground anywhere within 4 tiles below the path ahead = a real,
         // bottomless gap. (Stepping down from a platform onto lower ground
         // is safe to just walk off — don't panic-jump off platform edges.)
@@ -182,7 +182,7 @@ export function makeBot(debug: GameDebug, listeners: Record<string, Listener[]>)
       // (not on chase levels — there are no gaps, and a stray hop onto a
       // platform just parks us out of the pup's reach)
       const noIdleHops = level.deed === 'chase';
-      if (luna.onGround && (mustJump || (!noIdleHops && simT - lastJump > nextHop))) {
+      if (player.onGround && (mustJump || (!noIdleHops && simT - lastJump > nextHop))) {
         lastJump = simT;
         nextHop = 0.8 + Math.random() * 0.8;
         setKey('Space', true);

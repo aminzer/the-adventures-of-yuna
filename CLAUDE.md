@@ -18,8 +18,9 @@ rainbow is one story, not the game.
 - **Pictures carry the gameplay, text is narration on top.** Thought bubbles
   show what a friend needs. Russian subtitles + voice-over tell the story; a
   child who cannot read must still be able to play.
-- **Hero is Юна** (renamed from Луна; code identifiers stay `luna`). Friend
-  mama is a bigger unicorn (tutorial level).
+- **Hero is Юна** (renamed from Луна). Code identifiers are name-agnostic:
+  `player`, `drawPlayer`, `PLAYER_W` — never bake the hero's name into code.
+  Friend mama is a bigger unicorn (tutorial level).
 - **Stars are celebratory**, never a requirement; the finale shows exactly the
   collected count in the night sky (a child once counted the baby-star as one —
   never draw a star-like thing in the sky that isn't a collected star).

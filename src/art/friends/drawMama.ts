@@ -1,6 +1,6 @@
 import type { Ctx, FriendPose } from '../types';
 import { circle } from '../shapes';
-import { drawLuna } from '../drawLuna';
+import { drawPlayer } from '../drawPlayer';
 
 // Mama unicorn — Юна, just a little bigger and calmer, with a flower
 // tucked into her mane. She waits at the end of the practice meadow.
@@ -8,7 +8,7 @@ export function drawMama(g: Ctx, o: FriendPose): void {
   g.save();
   g.translate(0, -o.hop);
   g.scale(1.18, 1.18);
-  drawLuna(g, {
+  drawPlayer(g, {
     t: o.t * 0.6, // slower, calmer movements
     walk: 0,
     facing: o.facing ?? -1,

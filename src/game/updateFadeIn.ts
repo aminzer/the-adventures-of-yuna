@@ -10,7 +10,7 @@ export function updateFadeIn(gc: GameCtx, dt: number): void {
     if (gc.afterFade === 'FINALE' && gc.state !== 'FINALE') {
       gc.state = 'FINALE';
       audio.fadeMusicIn(2); // the goodnight song rises with the night
-      // the stars fly up right away — point at them first, thank Luna after
+      // the stars fly up right away — point at them first, thank Yuna after
       if (gc.totalStars > 0) showCaption(gc, TEXTS.finaleStars, 7);
       else showCaption(gc, TEXTS.finale, 30);
     } else if (gc.afterFade !== 'FINALE') {

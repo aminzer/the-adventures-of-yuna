@@ -34,7 +34,7 @@ const inLevel = (i: number, after: number): boolean =>
 const wanted: Record<string, () => boolean> = {
   '00-intro': () => inLevel(0, 1.0),
   '01-grey-world': () => inLevel(1, 1.5),
-  '02-carrying': () => debug.levelIndex() === 1 && !!debug.luna.carrying,
+  '02-carrying': () => debug.levelIndex() === 1 && !!debug.player.carrying,
   '03-giving': () => debug.levelIndex() === 1 && debug.state() === 'GIVING',
   '04-blooming': () => {
     if (debug.levelIndex() !== 1 || debug.state() !== 'BLOOMING') return false;
@@ -49,9 +49,9 @@ const wanted: Record<string, () => boolean> = {
   '10-level7-fox-hug': () => debug.levelIndex() === 7 && debug.state() === 'GIVING',
   '11-level8-wings': () => debug.levelIndex() === 8 && !!debug.wings() && !debug.wings()!.taken && inLevel(8, 1.2),
   '12-level8-flying': () =>
-    debug.levelIndex() === 8 && debug.luna.hasWings && !debug.luna.onGround && debug.luna.y < 500 && debug.state() === 'PLAYING',
+    debug.levelIndex() === 8 && debug.player.hasWings && !debug.player.onGround && debug.player.y < 500 && debug.state() === 'PLAYING',
   '13-level9-song': () => inLevel(9, 1.8),
-  '14-level10-water': () => debug.levelIndex() === 10 && debug.state() === 'PLAYING' && debug.luna.y > 240,
+  '14-level10-water': () => debug.levelIndex() === 10 && debug.state() === 'PLAYING' && debug.player.y > 240,
   '15-level11-chase': () => inLevel(11, 1.2),
   '16-finale': () => {
     if (debug.state() !== 'FINALE') return false;

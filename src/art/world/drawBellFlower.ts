@@ -1,7 +1,7 @@
 import type { Ctx } from '../types';
 import { circle } from '../shapes';
 
-// A big bell-flower that plays a note when Luna jumps on it.
+// A big bell-flower that plays a note when Yuna jumps on it.
 // lit: 0..1 — how brightly it is ringing right now.
 export function drawBellFlower(g: Ctx, color: string, t: number, lit: number): void {
   g.save();

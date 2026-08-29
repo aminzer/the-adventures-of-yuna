@@ -3,13 +3,13 @@ import { LEVELS } from '../levels';
 import { TEXTS } from '../texts';
 import { audio } from '../audio';
 import type { GameCtx } from './context';
-import { settleLuna } from './settleLuna';
+import { settlePlayer } from './settlePlayer';
 import { showCaption } from './showCaption';
 import { easeOutCubic } from './utils';
 
 export function updateBlooming(gc: GameCtx, dt: number): void {
   gc.stateT += dt;
-  settleLuna(gc, dt);
+  settlePlayer(gc, dt);
   const p = Math.min(1, gc.stateT / C.BLOOM_TIME);
   gc.bloom!.r = easeOutCubic(p) * 1900;
   // sparkles along the growing rim of color
