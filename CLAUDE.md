@@ -80,6 +80,11 @@ After any level/physics/text change run: `typecheck` → `check:levels` →
 `test:smoke` → `build`. After changing caption texts also run `npm run voice`
 (regenerates clips, deletes stale ones).
 
+CI (`.github/workflows/`): `Verify` runs those four steps on push/PR to `main`
+(ubuntu + windows, Node 20/22); `Deploy` runs after a successful Verify on
+`main` and publishes `dist/` to the `gh-pages` branch →
+https://aminzer.github.io/the-adventures-of-yuna/
+
 ## Working conventions
 
 - Bot findings are design feedback: when the smoke-test bot gets stuck, first
