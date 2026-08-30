@@ -22,7 +22,7 @@ export interface SpokenGroup {
 
 function levelLines(L: LevelDef): string[] {
   const out: string[] = [L.story];
-  if (L.practice) out.push(TEXTS.introWalk, TEXTS.introJump, TEXTS.introGo);
+  if (L.practice) out.push(TEXTS.introJump, TEXTS.introGo);
   if (L.sky) out.push(TEXTS.wings, TEXTS.wingsTired, TEXTS.wingsReady);
   if (L.water) out.push(TEXTS.airLow, TEXTS.bubbleLift);
   if (L.deed === 'song') out.push(TEXTS.listen, TEXTS.yourTurn, TEXTS.wrongNote);

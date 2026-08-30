@@ -34,8 +34,10 @@ rainbow is one story, not the game.
   (1…9, 0, -, =). Not discoverable by the child by accident.
 - **Voice:** real recording by a family member > Edge neural TTS clip
   (ru-RU-SvetlanaNeural) > browser speech. Author found Windows SAPI voices
-  "awful" — never make them the primary path. One microphone, one take per
-  line (a multi-mic/multi-take feature was built and deliberately removed).
+  "awful" — never make them the primary path. A line keeps SEVERAL takes
+  (with tags set at recording time + a free-text note) so the actor can
+  compare and pick the one that ships («в игре»); a per-microphone variant of
+  this was tried and dropped — tags replace it, don't bring device labels back.
 - The author decides when to commit: **commit only when asked** ("commit").
 
 ## Tech
@@ -54,8 +56,9 @@ and SFX are procedural. `base: './'` so `dist/` runs from a file share.
   code changes its key and orphans its recording; prefer an override.
 - **Voice:** `src/voice.ts` (fallback chain, music ducking), `src/voiceClips.ts`
   and `src/voiceActor.ts` are GENERATED manifests — never edit by hand.
-  Clips: `public/voice/` (TTS), `public/voice-actor/` (cleaned recordings),
-  `voice-takes/` (raw recordings, dev only).
+  Clips: `public/voice/` (TTS), `public/voice-actor/` (the active take per
+  line, processed), `voice-takes/<key>/<takeId>.{source,processed}.webm` + `takes.json`
+  (all takes with tags/notes; dev only, not shipped).
 - **Rendering:** background muted by colour mixing, world layer drawn to an
   offscreen buffer with a `saturation` veil + bloom clip, rainbow is part of
   the landscape (behind hills), night finale with star flight.

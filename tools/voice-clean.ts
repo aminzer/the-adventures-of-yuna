@@ -55,10 +55,11 @@ export async function ffmpeg(): Promise<string | null> {
   return ffmpegPath;
 }
 
-// Cleaned file name for a raw take: «usb.webm» → «usb.clean.webm»
-export function cleanName(file: string): string {
+// Processed file name for a source take: «x.source.webm» → «x.processed.webm»
+export function processedName(file: string): string {
+  if (/\.source\.[a-z0-9]+$/.test(file)) return file.replace(/\.source(\.[a-z0-9]+)$/, '.processed$1');
   const ext = path.extname(file);
-  return `${file.slice(0, -ext.length)}.clean${ext || '.webm'}`;
+  return `${file.slice(0, -ext.length)}.processed${ext || '.webm'}`;
 }
 
 // Write the cleaned version of `input` to `output` (Opus in WebM, mono, 64 kbps).
@@ -67,10 +68,33 @@ export async function cleanTake(input: string, output: string): Promise<void> {
   if (!bin) throw new Error('ffmpeg not available — run `npm install` (ffmpeg-static)');
   fs.mkdirSync(path.dirname(output), { recursive: true });
   const tmp = `${output}.tmp.webm`;
-  await run(bin, ['-y', '-hide_banner', '-loglevel', 'error', '-i', input, '-af', FILTER, '-c:a', 'libopus', '-b:a', '64k', '-ar', '48000', '-ac', '1', '-f', 'webm', tmp], {
-    windowsHide: true,
-  });
-  fs.renameSync(tmp, output);
+  const args = ['-y', '-hide_banner', '-loglevel', 'error', '-i', input, '-af', FILTER, '-c:a', 'libopus', '-b:a', '64k', '-ar', '48000', '-ac', '1', '-f', 'webm', tmp];
+  // a busy machine can make ffmpeg fail transiently (e.g. "Cannot allocate
+  // memory" from the buffering filters) — one immediate retry usually lands
+  for (let attempt = 1; ; attempt++) {
+    try {
+      await run(bin, args, { windowsHide: true });
+      break;
+    } catch (e) {
+      fs.rmSync(tmp, { force: true });
+      if (attempt >= 3) throw e;
+      await new Promise((r) => setTimeout(r, 500 * attempt));
+    }
+  }
+  // the rename occasionally hits EBUSY/EPERM on Windows right after ffmpeg
+  // exits (antivirus still holds the fresh file) — retry briefly
+  for (let attempt = 1; ; attempt++) {
+    try {
+      fs.renameSync(tmp, output);
+      return;
+    } catch (e) {
+      if (attempt >= 10) {
+        fs.rmSync(tmp, { force: true });
+        throw e;
+      }
+      await new Promise((r) => setTimeout(r, 100 * attempt));
+    }
+  }
 }
 
 export interface AudioStats {

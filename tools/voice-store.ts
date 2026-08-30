@@ -1,21 +1,24 @@
 // Where the voice actor's recordings live and how they reach the game. Shared
 // by the dev-server studio plugin (vite.config.ts) and the CLI tools.
 //
-//   voice-takes/<key>.webm         the recording as it came from the microphone
-//   public/voice-actor/<key>.webm  the same line after noise cleaning — what
-//                                  the game plays (ships with the build)
-//   src/voiceActor.ts              { key → clip file }  (ACTOR_CLIPS)
-//   src/textOverrides.json         { key → reworded caption }
+//   voice-takes/<key>/<takeId>.source.webm     a take as it came from the microphone
+//   voice-takes/<key>/<takeId>.processed.webm  the same take after noise cleaning
+//   voice-takes/takes.json                 per line: which take is active + tags/notes
+//   public/voice-actor/<key>.webm          the ACTIVE take (cleaned) — what the game plays
+//   src/voiceActor.ts                      { key → clip file }  (ACTOR_CLIPS)
+//   src/textOverrides.json                 { key → reworded caption }
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 export const ACTOR_DIR = path.join(ROOT, 'public', 'voice-actor');
-export const RAW_DIR = path.join(ROOT, 'voice-takes');
+export const TAKES_DIR = path.join(ROOT, 'voice-takes');
+export const TAKES_JSON = path.join(TAKES_DIR, 'takes.json');
 export const MANIFEST = path.join(ROOT, 'src', 'voiceActor.ts');
 export const OVERRIDES = path.join(ROOT, 'src', 'textOverrides.json');
 export const KEY_RE = /^[0-9a-f]{8}$/;
+export const TAKE_ID_RE = /^[a-z0-9]{6,16}$/;
 
 export const EXT_BY_TYPE: Record<string, string> = {
   'audio/webm': 'webm',
@@ -26,27 +29,51 @@ export const EXT_BY_TYPE: Record<string, string> = {
 };
 export const TYPE_BY_EXT: Record<string, string> = Object.fromEntries(Object.entries(EXT_BY_TYPE).map(([t, e]) => [e, t]));
 
+export interface Take {
+  id: string;
+  file: string; // source recording (<id>.source.webm) inside voice-takes/<key>/
+  processed?: string; // noise-cleaned version — what the game gets when present
+  at: string; // ISO time of approval
+  seconds?: number;
+  tags: string[]; // set in the studio's tag editor when the take was recorded
+  note: string; // the actor's comment («сделать голос ниже», «лучший», …)
+}
+export interface LineTakes {
+  active: string | null; // id of the take the game plays
+  takes: Take[]; // oldest first
+}
+export type TakesDb = Record<string, LineTakes>;
+
 export function writeIfChanged(file: string, src: string): void {
   fs.mkdirSync(path.dirname(file), { recursive: true });
   if (!fs.existsSync(file) || fs.readFileSync(file, 'utf8') !== src) fs.writeFileSync(file, src);
 }
 
-// { key → file name } for every <key>.<ext> in a folder.
-export function clipsIn(dir: string): Record<string, string> {
-  if (!fs.existsSync(dir)) return {};
+export function newTakeId(): string {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+}
+
+// Tags/notes are typed by the actor — keep them short and plain.
+export function cleanTags(v: unknown): string[] {
+  if (!Array.isArray(v)) return [];
+  const out: string[] = [];
+  for (const t of v) {
+    const s = String(t).replace(/\s+/g, ' ').trim().slice(0, 30);
+    if (s && !out.includes(s)) out.push(s);
+  }
+  return out.slice(0, 12);
+}
+export const cleanNote = (v: unknown): string => (typeof v === 'string' ? v.replace(/\s+/g, ' ').trim().slice(0, 300) : '');
+
+// ---- active clips (public/voice-actor) --------------------------------------
+export function actorClips(): Record<string, string> {
+  if (!fs.existsSync(ACTOR_DIR)) return {};
   const out: Record<string, string> = {};
-  for (const f of fs.readdirSync(dir).sort()) {
+  for (const f of fs.readdirSync(ACTOR_DIR).sort()) {
     const key = f.split('.')[0];
     if (KEY_RE.test(key)) out[key] = f;
   }
   return out;
-}
-export const actorClips = (): Record<string, string> => clipsIn(ACTOR_DIR);
-export const rawClips = (): Record<string, string> => clipsIn(RAW_DIR);
-
-export function removeClip(dir: string, key: string): void {
-  if (!fs.existsSync(dir)) return;
-  for (const f of fs.readdirSync(dir)) if (f.split('.')[0] === key) fs.unlinkSync(path.join(dir, f));
 }
 
 export function writeManifest(clips: Record<string, string> = actorClips()): void {
@@ -58,13 +85,95 @@ export function writeManifest(clips: Record<string, string> = actorClips()): voi
   writeIfChanged(MANIFEST, `${header}export const ACTOR_CLIPS: Record<string, string> = {${body ? `\n${body}\n` : ''}};\n`);
 }
 
-// Recordings made before raw copies were kept: treat the game clip as the raw take.
-export function importLegacyClips(): void {
-  const raw = rawClips();
-  for (const [key, file] of Object.entries(actorClips())) {
-    if (raw[key]) continue;
-    fs.mkdirSync(RAW_DIR, { recursive: true });
-    fs.copyFileSync(path.join(ACTOR_DIR, file), path.join(RAW_DIR, file));
+function removeActiveClip(key: string): void {
+  if (!fs.existsSync(ACTOR_DIR)) return;
+  for (const f of fs.readdirSync(ACTOR_DIR)) if (f.split('.')[0] === key) fs.unlinkSync(path.join(ACTOR_DIR, f));
+}
+
+// The file the game should play for a take: the processed one when it exists.
+export function bestFile(key: string, take: Take): string {
+  const processed = take.processed ? path.join(TAKES_DIR, key, take.processed) : '';
+  return processed && fs.existsSync(processed) ? processed : path.join(TAKES_DIR, key, take.file);
+}
+
+// Make public/voice-actor/<key>.* mirror the line's active take.
+export function syncActive(key: string, db: TakesDb): void {
+  removeActiveClip(key);
+  const line = db[key];
+  const take = line?.takes.find((t) => t.id === line.active);
+  if (take) {
+    const src = bestFile(key, take);
+    fs.mkdirSync(ACTOR_DIR, { recursive: true });
+    fs.copyFileSync(src, path.join(ACTOR_DIR, `${key}.${src.split('.').pop()}`));
+  }
+  writeManifest();
+}
+
+// ---- takes.json -----------------------------------------------------------------
+export function readTakes(): TakesDb {
+  try {
+    const parsed = JSON.parse(fs.readFileSync(TAKES_JSON, 'utf8')) as Record<string, Partial<LineTakes>>;
+    const out: TakesDb = {};
+    for (const [k, v] of Object.entries(parsed)) {
+      if (!KEY_RE.test(k) || !v || !Array.isArray(v.takes)) continue;
+      const takes = v.takes
+        .filter((t) => t && TAKE_ID_RE.test(String(t.id)) && typeof t.file === 'string')
+        // `clean` is the pre-rename name of the `processed` field
+        .map((t) => {
+          const { clean, ...rest } = t as typeof t & { clean?: string };
+          return { ...rest, processed: rest.processed ?? clean, tags: cleanTags(t.tags), note: cleanNote(t.note) };
+        });
+      out[k] = { active: takes.some((t) => t.id === v.active) ? v.active! : null, takes };
+    }
+    return out;
+  } catch {
+    return {};
+  }
+}
+
+export function writeTakes(db: TakesDb): void {
+  const sorted = Object.fromEntries(Object.entries(db).sort(([a], [b]) => a.localeCompare(b)));
+  writeIfChanged(TAKES_JSON, `${JSON.stringify(sorted, null, 2)}\n`);
+}
+
+// Recordings from before takes had ids: a flat voice-takes/<key>.webm (raw)
+// plus public/voice-actor/<key>.webm (its cleaned copy) become one take. Also
+// renames per-take files from older schemes (<id>.webm / <id>.clean.webm) to
+// the current <id>.source.webm / <id>.processed.webm.
+export function importLegacyClips(db: TakesDb): void {
+  if (!fs.existsSync(TAKES_DIR)) return;
+  const clips = actorClips();
+  for (const f of fs.readdirSync(TAKES_DIR)) {
+    const key = f.split('.')[0];
+    const flat = path.join(TAKES_DIR, f);
+    if (!KEY_RE.test(key) || !fs.statSync(flat).isFile()) continue;
+    const id = newTakeId();
+    const dir = path.join(TAKES_DIR, key);
+    fs.mkdirSync(dir, { recursive: true });
+    const ext = f.split('.').pop();
+    const sourceName = `${id}.source.${ext}`;
+    fs.renameSync(flat, path.join(dir, sourceName));
+    const take: Take = { id, file: sourceName, at: fs.statSync(path.join(dir, sourceName)).mtime.toISOString(), tags: [], note: '' };
+    if (clips[key]) {
+      take.processed = `${id}.processed.${clips[key].split('.').pop()}`;
+      fs.copyFileSync(path.join(ACTOR_DIR, clips[key]), path.join(dir, take.processed));
+    }
+    const line = (db[key] ??= { active: null, takes: [] });
+    line.takes.push(take);
+    line.active ??= id;
+  }
+  // older per-take file names → the .source/.processed scheme
+  for (const [key, line] of Object.entries(db)) {
+    for (const take of line.takes) {
+      const fixes: Array<['file' | 'processed', string]> = [];
+      if (!take.file.includes('.source.')) fixes.push(['file', take.file.replace(/(\.[a-z0-9]+)$/, '.source$1')]);
+      if (take.processed?.includes('.clean.')) fixes.push(['processed', take.processed.replace('.clean.', '.processed.')]);
+      for (const [field, next] of fixes) {
+        const from = path.join(TAKES_DIR, key, take[field]!);
+        if (fs.existsSync(from)) fs.renameSync(from, path.join(TAKES_DIR, key, next));
+        take[field] = next;
+      }
+    }
   }
 }
 

@@ -72,11 +72,13 @@ export function clipUrls(slotKey: string, ttsKey = slotKey): string[] {
 // Try each clip in turn; if none can play, use the synthetic voice.
 function playChain(urls: string[], spoken: string): void {
   if (urls.length === 0 || typeof Audio === 'undefined') {
+    if (import.meta.env?.DEV) console.info(`[voice] browser speech: ${spoken}`);
     speakSynth(spoken);
     return;
   }
   const a = new Audio(urls[0]);
   clip = a;
+  if (import.meta.env?.DEV) console.info(`[voice] ${urls[0]}`); // which source is playing — handy when a line sounds wrong
   a.onplay = () => audio.duckMusic(true);
   a.onended = () => audio.duckMusic(false);
   a.onerror = () => {

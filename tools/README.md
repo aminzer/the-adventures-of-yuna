@@ -22,18 +22,24 @@ These scripts help while developing new levels and stages:
 - `npm run studio` — opens the **recording studio** (`record.html`) in the
   browser: every narrator line one by one, big text, record / listen /
   approve / retry, plus the robot version for reference. Approved takes are
-  stored by the dev server (voice-studio plugin in `vite.config.ts`): the raw
-  recording goes to `voice-takes/<key>.webm`, a **cleaned** copy to
-  `public/voice-actor/<key>.webm` (what the game plays), and the manifest
-  `src/voiceActor.ts` is regenerated. Cleaning uses ffmpeg (`ffmpeg-static`
+  stored by the dev server (voice-studio plugin in `vite.config.ts`). A line
+  keeps **every approved take**: the source `voice-takes/<key>/<takeId>.source.webm`,
+  its processed twin `<takeId>.processed.webm`, and `voice-takes/takes.json` with the
+  take's time, length, **tags** (whatever is in the studio's tag editor when
+  the take is approved — e.g. «спокойно», «ниже») and a free-text **note**
+  editable on each row. The take marked «● в игре» is copied to
+  `public/voice-actor/<key>.webm` and the manifest `src/voiceActor.ts` is
+  regenerated; a new take becomes active, «В игру» switches, 🗑 deletes one
+  take (deleting the active one falls back to the newest remaining).
+  Cleaning uses ffmpeg (`ffmpeg-static`
   dev dependency; chain in `tools/voice-clean.ts`): high/low-pass, `adeclick`
   for mouth clicks, `afftdn` denoiser, `deesser` for harsh sibilants, loudness
   normalisation, a gentle gate and silence trimming. The studio plays both
-  («🎧 Утверждённая» = cleaned, «🎧 Оригинал» = raw). Deleting a recording
-  reverts that line to the robot.
-- `npm run voice:clean` — (re)cleans every raw recording in `voice-takes/`
-  into `public/voice-actor/`; `-- --force` after tuning the filter chain,
-  incremental otherwise. The text can be
+  («▶ обработанный» = what the game plays, «▶ оригинал» = as recorded).
+  Deleting the last take of a line reverts it to the robot.
+- `npm run voice:clean` — (re)cleans every take in `voice-takes/` and
+  refreshes the active clips in `public/voice-actor/`; `-- --force` after
+  tuning the filter chain, incremental otherwise. The text can be
   reworded right in the studio (💾 Сохранить текст, or just approve a take —
   the words on screen are saved with it): overrides go to
   `src/textOverrides.json` keyed by the ORIGINAL line, and the game shows and

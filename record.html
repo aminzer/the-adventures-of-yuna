@@ -7,10 +7,10 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎙️</text></svg>">
   <style>
     :root { --bg: #f6f1ea; --card: #fffdf9; --ink: #33302c; --soft: #8a827a; --line: #e7dfd4;
-            --accent: #d9536f; --ok: #3f9d6b; --warm: #f2b661; }
+            --accent: #d9536f; --ok: #3f9d6b; --warm: #f2b661; --tag: #e9e2f7; --tagink: #4b3d78; }
     * { box-sizing: border-box; }
     body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.45 system-ui, "Segoe UI", sans-serif; }
-    .wrap { max-width: 880px; margin: 0 auto; padding: 24px 20px 48px; }
+    .wrap { max-width: 920px; margin: 0 auto; padding: 24px 20px 48px; }
     header { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
     h1 { font-size: 22px; margin: 0; }
     .progress { display: flex; align-items: center; gap: 12px; color: var(--soft); }
@@ -48,9 +48,36 @@
     @keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(181,47,75,.45);} 50% { box-shadow: 0 0 0 10px rgba(181,47,75,0);} }
     .meter { margin: 18px 0 6px; height: 14px; border-radius: 7px; background: var(--line); overflow: hidden; }
     .meter > i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--ok), var(--warm), var(--accent)); transition: width .06s linear; }
+
+    /* tag editor — tags typed here attach to every take approved afterwards */
+    .tagbox { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 6px 0 14px; padding: 10px 12px; border: 1px dashed var(--line); border-radius: 12px; font-size: 14px; color: var(--soft); }
+    .tagbox input { font: inherit; font-size: 14px; border: none; background: transparent; outline: none; min-width: 160px; flex: 1; color: var(--ink); }
+    .tag { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: 999px; background: var(--tag); color: var(--tagink); font-size: 13px; }
+    .tag b { font-weight: 600; cursor: pointer; opacity: .6; }
+    .tag b:hover { opacity: 1; }
+
+    /* the fresh take, before approval */
     .take { margin-top: 18px; padding: 14px 16px; border-radius: 12px; background: #f7f3ec; display: none; }
     .take.show { display: block; }
     .take .row { margin-top: 10px; }
+    .take input.note { font: inherit; font-size: 14px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 10px; width: 100%; margin-top: 10px; }
+
+    /* all takes of the current line */
+    .takes { margin-top: 20px; display: none; }
+    .takes.show { display: block; }
+    .takes h2 { font-size: 14px; text-transform: uppercase; letter-spacing: .06em; color: var(--soft); margin: 0 0 8px; }
+    .takerow { display: grid; grid-template-columns: 1fr auto; gap: 6px 10px; padding: 10px 14px; border-radius: 12px; background: #f7f3ec; margin-bottom: 8px; font-size: 14px; border-left: 4px solid transparent; }
+    .takerow.active { background: #e6f4ec; border-left-color: var(--ok); }
+    .takerow .info { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; color: var(--ink); }
+    .takerow .info .n { font-weight: 700; }
+    .takerow .info .when { color: var(--soft); }
+    .takerow .btns { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+    .takerow .btns button { padding: 5px 10px; font-size: 13px; }
+    .takerow .btns button.inuse { background: var(--ok); color: #fff; border-color: transparent; opacity: 1; }
+    .takerow input.note { grid-column: 1 / -1; font: inherit; font-size: 14px; padding: 6px 10px; border: 1px solid transparent; border-radius: 8px; background: transparent; color: var(--ink); }
+    .takerow input.note:hover { border-color: var(--line); background: #fff; }
+    .takerow input.note:focus { outline: none; border-color: var(--warm); background: #fff; }
+
     .status { min-height: 1.4em; margin-top: 14px; color: var(--soft); font-size: 14px; }
     .status.err { color: var(--accent); }
     footer { margin-top: 18px; color: var(--soft); font-size: 13px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
@@ -60,7 +87,7 @@
     .list h3:first-child { margin-top: 0; }
     .list a.done { color: #1f6b43; }
     .list a.cur { color: var(--ink); font-weight: 600; }
-    @media (max-width: 640px) { .line { font-size: 24px; } .list { columns: 1; } .card { padding: 20px; } }
+    @media (max-width: 640px) { .line { font-size: 24px; } .list { columns: 1; } .card { padding: 20px; } .takerow { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
@@ -81,22 +108,31 @@
         <button id="btnResetText">↩ Вернуть исходный</button>
       </div>
 
+      <div class="tagbox" title="Эти теги будут привязаны к каждой новой записи, пока вы их не поменяете">
+        <span>🏷 Теги для новых записей:</span>
+        <span id="tagChips"></span>
+        <input id="tagInput" placeholder="например: спокойно, ниже — Enter или запятая" maxlength="30">
+      </div>
+
       <div class="row">
         <button id="btnRec" class="rec">⏺ Записать</button>
         <button id="btnRef" title="Как это читает синтезатор">🤖 Робот</button>
-        <button id="btnSaved" title="Утверждённая запись после очистки — так звучит в игре">🎧 Утверждённая</button>
-        <button id="btnRaw" title="Утверждённая запись как есть, до очистки">🎧 Оригинал</button>
-        <button id="btnDelete" title="Удалить утверждённую запись — снова будет робот">🗑</button>
       </div>
       <div class="meter"><i id="meter"></i></div>
 
       <div class="take" id="take">
-        <div>Новый дубль <span id="takeLen" style="color:var(--soft)"></span></div>
+        <div>Новый дубль <span id="takeLen" style="color:var(--soft)"></span> <span id="takeTags"></span></div>
+        <input class="note" id="takeNote" placeholder="комментарий к дублю (необязательно), например: попробовала мягче" maxlength="300">
         <div class="row">
           <button id="btnPlay">▶ Прослушать</button>
           <button id="btnApprove" class="ok">✔ Утвердить</button>
-          <button id="btnRetry">↺ Ещё дубль</button>
+          <button id="btnRetry">↺ Отбросить</button>
         </div>
+      </div>
+
+      <div class="takes" id="takes">
+        <h2 id="takesTitle">Записи этой реплики</h2>
+        <div id="takeRows"></div>
       </div>
 
       <div class="status" id="status"></div>
