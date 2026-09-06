@@ -1,12 +1,18 @@
 import { C } from '../config';
-import type { FriendKind } from '../levels';
+import { CHAPTERS, type FriendKind } from '../levels';
 import * as art from '../art';
 import type { GameCtx } from './context';
 import { finaleStarFlights } from './finaleStarFlight';
+import { renderFinaleMeadow } from './renderFinaleMeadow';
+import { renderFinaleRainbow } from './renderFinaleRainbow';
 import { renderParticles } from './renderParticles';
 import { renderUI } from './renderUI';
 
 export function renderFinale(gc: GameCtx): void {
+  const kind = CHAPTERS[gc.finaleChapter].finale;
+  if (kind === 'meadow') return renderFinaleMeadow(gc);
+  if (kind === 'rainbowParty') return renderFinaleRainbow(gc);
+
   const ctx = gc.ctx;
 
   // the party goes on into the night — a calm, moonlit sky
@@ -76,7 +82,8 @@ export function renderFinale(gc: GameCtx): void {
     { kind: 'octopus', x: 880, ph: 2.5 },
     { kind: 'puppy', x: 855, ph: 3.2 },
   ];
-  for (const f of cast.slice(0, Math.max(1, gc.colorsRestored))) {
+  // the night comes after every chapter — the whole cast is at the party
+  for (const f of cast) {
     ctx.save();
     ctx.translate(f.x, 452 - Math.sin(((f.x - 100) / 760) * Math.PI) * 40);
     art.drawFriend(ctx, f.kind, { t: gc.globalT + f.ph, happy: true, hop: bob(f.ph), facing: f.x > 480 ? -1 : 1 });
@@ -88,7 +95,7 @@ export function renderFinale(gc: GameCtx): void {
   ctx.translate(470, 428);
   art.drawPlayer(ctx, {
     t: gc.globalT, walk: 0.4, facing: 1, onGround: true, vy: 0, blink: gc.player.blink,
-    wings: gc.colorsRestored >= 8, rising: false,
+    wings: true, rising: false, // earned back in the gold level, kept ever since
   });
   ctx.restore();
 

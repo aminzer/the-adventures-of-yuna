@@ -1,4 +1,11 @@
-// The Adventures of Yuna — level maps. Chapter 1: «Потерянная радуга» (The Lost Rainbow).
+// The Adventures of Yuna — chapters and level maps.
+//
+// The game is a book: CHAPTERS, each with its levels and its own final scene.
+//   0 «Обучение»            — the sunny tutorial; ends with mama on the meadow
+//   1 «Потерянная радуга»   — one rainbow colour per level; ends with the
+//                             day rainbow party
+//   2 «Новые приключения»   — the adventures beyond the rainbow; ends with
+//                             the night sky of collected stars (game finale)
 //
 // Each character is one 48 px tile. You can draw new levels right here in a
 // text editor. Legend:
@@ -59,7 +66,7 @@ export interface LevelDef {
   map: string[];
 }
 
-export const LEVELS: LevelDef[] = [
+const ALL_LEVELS: LevelDef[] = [
   {
     // The tutorial — Юна's sunny home meadow, before the storm's grey world.
     // It teaches walking, jumping, stars, one tiny gap, and the first kind
@@ -371,3 +378,71 @@ export const LEVELS: LevelDef[] = [
     ],
   },
 ];
+
+// ---------------------------------------------------------------------------
+// Chapters
+// ---------------------------------------------------------------------------
+export interface ChapterDef {
+  name: string;
+  title: string; // Russian; shown on the chapter card between chapters and voiced
+  finale: 'meadow' | 'rainbowParty' | 'night'; // the chapter's final scene
+  finaleMusic: MoodName;
+  earnsStripe: boolean; // this chapter's levels each restore a rainbow stripe
+  levels: LevelDef[];
+}
+
+const byName = (...names: string[]): LevelDef[] => names.map((n) => ALL_LEVELS.find((l) => l.name === n)!);
+
+export const CHAPTERS: ChapterDef[] = [
+  {
+    name: 'intro',
+    title: 'Обучение',
+    finale: 'meadow',
+    finaleMusic: 'meadow',
+    earnsStripe: false,
+    levels: byName('intro'),
+  },
+  {
+    name: 'rainbow',
+    title: 'Глава первая. Потерянная радуга',
+    finale: 'rainbowParty',
+    finaleMusic: 'sunny',
+    earnsStripe: true, // exactly the seven stripes of C.RAINBOW
+    levels: byName('red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet'),
+  },
+  {
+    name: 'beyond',
+    title: 'Глава вторая. Новые приключения',
+    finale: 'night',
+    finaleMusic: 'night',
+    earnsStripe: false, // the rainbow is whole; these levels reward with friends and stars
+    levels: byName('gold', 'song', 'water', 'chase'),
+  },
+];
+
+// The flat play order the rest of the game works with.
+export const LEVELS: LevelDef[] = CHAPTERS.flatMap((c) => c.levels);
+
+export function chapterIndexOfLevel(levelIndex: number): number {
+  let n = 0;
+  for (let c = 0; c < CHAPTERS.length; c++) {
+    n += CHAPTERS[c].levels.length;
+    if (levelIndex < n) return c;
+  }
+  return CHAPTERS.length - 1;
+}
+
+export const chapterOfLevel = (levelIndex: number): ChapterDef => CHAPTERS[chapterIndexOfLevel(levelIndex)];
+
+// Last level of its chapter → the chapter's final scene comes next.
+export const isChapterEnd = (levelIndex: number): boolean =>
+  levelIndex + 1 >= LEVELS.length || chapterIndexOfLevel(levelIndex + 1) !== chapterIndexOfLevel(levelIndex);
+
+// First level of its chapter → a chapter card is shown before it.
+export const isChapterStart = (levelIndex: number): boolean =>
+  levelIndex === 0 || chapterIndexOfLevel(levelIndex - 1) !== chapterIndexOfLevel(levelIndex);
+
+// How many rainbow stripes are already earned when a level begins.
+export const stripesBeforeLevel = (levelIndex: number): number =>
+  LEVELS.slice(0, levelIndex).filter((_, i) => chapterOfLevel(i).earnsStripe).length;
+

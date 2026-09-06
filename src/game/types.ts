@@ -1,6 +1,6 @@
 import type { FriendKind, ItemKind } from '../levels';
 
-export type GameState = 'PLAYING' | 'GIVING' | 'BLOOMING' | 'LEVEL_DONE' | 'FADE_OUT' | 'FADE_IN' | 'FINALE';
+export type GameState = 'PLAYING' | 'GIVING' | 'BLOOMING' | 'LEVEL_DONE' | 'FADE_OUT' | 'FADE_IN' | 'CHAPTER_CARD' | 'FINALE';
 
 export interface Friend {
   kind: FriendKind;
@@ -128,6 +128,7 @@ export interface GameDebug {
   state: () => GameState;
   levelIndex: () => number;
   colorsRestored: () => number;
+  finaleChapter: () => number;
   totalStars: () => number;
   wings: () => Wings | null;
   bells: () => Bell[];

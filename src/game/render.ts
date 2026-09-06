@@ -3,6 +3,7 @@ import type { GameCtx } from './context';
 import { renderWorld } from './renderWorld';
 import { renderFinale } from './renderFinale';
 import { renderCaption } from './renderCaption';
+import { renderChapterCard } from './renderChapterCard';
 
 export function render(gc: GameCtx): void {
   const ctx = gc.ctx;
@@ -15,6 +16,9 @@ export function render(gc: GameCtx): void {
     ctx.fillStyle = `rgba(20, 18, 32, ${gc.fade})`;
     ctx.fillRect(0, 0, C.VIEW_W, C.VIEW_H);
   }
+
+  // the chapter title sits on the black "book page" between chapters
+  if (gc.state === 'CHAPTER_CARD') renderChapterCard(gc);
 
   // subtitles stay readable even through the fades
   renderCaption(gc);

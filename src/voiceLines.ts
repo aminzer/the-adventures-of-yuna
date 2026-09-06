@@ -1,10 +1,10 @@
 // Every line the narrator can say — the single source of truth for the TTS
 // generator (npm run voice) and the recording studio (npm run studio).
-// Ordered the way a player hears them: level by level, and within a level in
-// the order the captions fire (story → mechanics → pickup → happy friend →
-// bloom), then the finale. Lines shared by several levels (rescue, bloom…)
+// Ordered the way a player hears them: chapter by chapter — the chapter card
+// title, its levels (story → mechanics → pickup → happy friend → bloom), the
+// chapter's final scene. Lines shared by several levels (rescue, bloom…)
 // appear once, where they are heard first.
-import { LEVELS, type LevelDef } from './levels';
+import { CHAPTERS, type ChapterDef, type LevelDef } from './levels';
 import { TEXTS, satisfiedText } from './texts';
 import { TEXT_OVERRIDES } from './textOverrides';
 import { spokenText, voiceKey } from './voiceText';
@@ -48,11 +48,22 @@ export function allSpokenGroups(): SpokenGroup[] {
     }
     return { title, lines };
   };
-  return [
-    // numbered like the secret level select: Shift+L then 1…9, 0, -, =
-    ...LEVELS.map((L, i) => group(`Уровень ${i + 1} · ${L.name} (Shift+L, ${'1234567890-='[i]})`, levelLines(L))),
-    group('Финал', [TEXTS.finaleStars, TEXTS.finale]),
-  ];
+  const finaleTexts = (ch: ChapterDef): string[] =>
+    ch.finale === 'meadow' ? [TEXTS.introDone]
+    : ch.finale === 'rainbowParty' ? [TEXTS.finale, TEXTS.rainbowNext]
+    : [TEXTS.finaleStars, TEXTS.goodnight];
+
+  const groups: SpokenGroup[] = [];
+  let li = 0; // flat level number, matching the secret select: Shift+L then 1…9, 0, -, =
+  for (const ch of CHAPTERS) {
+    groups.push(group(`${ch.title} — заставка главы`, [ch.title]));
+    for (const L of ch.levels) {
+      groups.push(group(`Уровень ${li + 1} · ${L.name} (Shift+L, ${'1234567890-='[li]})`, levelLines(L)));
+      li++;
+    }
+    groups.push(group(`${ch.title} — финал главы`, finaleTexts(ch)));
+  }
+  return groups.filter((g) => g.lines.length > 0);
 }
 
 // The spoken texts the game actually uses — what the TTS clips are made for.

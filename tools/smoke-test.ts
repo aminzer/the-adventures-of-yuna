@@ -2,7 +2,7 @@
 // Stubs the DOM, loads the real game code, and lets a very simple
 // "bot child" (walk toward the goal, hop now and then) try to finish all levels.
 
-import { LEVELS } from '../src/levels';
+import { CHAPTERS, LEVELS } from '../src/levels';
 import { startGame } from '../src/game';
 import { setupDom, makeBot } from './harness';
 
@@ -31,7 +31,7 @@ try {
       lastLevel = debug.levelIndex();
       events.push(`${simT.toFixed(1)}s  level ${lastLevel} (${LEVELS[lastLevel].name})  ->  ${lastState}`);
     }
-    if (debug.state() === 'FINALE') {
+    if (debug.state() === 'FINALE' && debug.finaleChapter() === CHAPTERS.length - 1) {
       done = true;
       break;
     }

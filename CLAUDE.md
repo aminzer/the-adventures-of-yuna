@@ -4,8 +4,12 @@ A gentle browser platformer the author builds for their 5-year-old daughter — 
 first computer game. Player speaks Russian; every in-game text and voice line is
 Russian. Chapter 1, «Потерянная радуга» (The Lost Rainbow): a storm stole the
 valley's colours; Yuna (Юна) the unicorn brings one rainbow colour back per level by
-helping a sad animal friend. Theme: kindness. More chapters are planned — the
-rainbow is one story, not the game.
+helping a sad animal friend. Theme: kindness. The game is structured as
+CHAPTERS (src/levels.ts `CHAPTERS`): 0 «Обучение» (tutorial), 1 «Потерянная
+радуга» (7 colour levels), 2 «Новые приключения» (gold/song/water/chase).
+Each chapter opens with a voiced black title card and closes with its own
+final scene (meadow with mama / day rainbow party / the night star sky, which
+ends the game). More chapters can be added by extending `CHAPTERS`.
 
 ## Intent and locked design decisions (author's calls — do not relitigate)
 
@@ -29,7 +33,9 @@ rainbow is one story, not the game.
 - **Kid-legible levels.** ASCII maps; gaps ≤ 3 tiles, platform rises ≤ 3, never
   a platform overhanging a gap's jump runway (head-bonk trap). `check:levels`
   enforces these — keep it green, extend it when adding rules.
-- **Practice level earns no rainbow stripe**; first "real" level starts grey.
+- **Rainbow stripes come only from chapter 1** (`ChapterDef.earnsStripe`) —
+  exactly the 7 stripes of `C.RAINBOW`; the tutorial and chapter 2 levels
+  don't add stripes. The practice level starts in full colour.
 - **Secret level select** for the parent: hold Shift+L, then a number-row key
   (1…9, 0, -, =). Not discoverable by the child by accident.
 - **Voice:** real recording by a family member > Edge neural TTS clip
@@ -48,7 +54,8 @@ and SFX are procedural. `base: './'` so `dist/` runs from a file share.
 - **One function per file.** `src/game/*` = update/render functions receiving
   the `GameCtx` state object (`context.ts`); `startGame.ts` assembles and
   returns `GameDebug` for headless tests. `src/art/*` = pure draw functions.
-  `config.ts` = every tunable constant. `levels.ts` = `LevelDef[]` + ASCII maps.
+  `config.ts` = every tunable constant. `levels.ts` = `CHAPTERS` (each with
+  levels, title, finale kind/music) + ASCII maps; `LEVELS` is the flat play order.
 - **Text:** `src/texts.ts` (captions, RU grammar helpers), `src/textOverrides.json`
   (actor's rewordings keyed by the ORIGINAL line's key, applied in
   `showCaption` via `captionText()`). `spokenText()`/`voiceKey()` in

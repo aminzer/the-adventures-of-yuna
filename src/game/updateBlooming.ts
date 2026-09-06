@@ -1,5 +1,5 @@
 import { C } from '../config';
-import { LEVELS } from '../levels';
+import { chapterOfLevel } from '../levels';
 import { TEXTS } from '../texts';
 import { audio } from '../audio';
 import type { GameCtx } from './context';
@@ -29,7 +29,7 @@ export function updateBlooming(gc: GameCtx, dt: number): void {
   if (p >= 1) {
     gc.desat = 0;
     gc.bloom = null;
-    if (!LEVELS[gc.levelIndex].practice) {
+    if (chapterOfLevel(gc.levelIndex).earnsStripe) {
       gc.colorsRestored++;
       gc.stripeFill = 0; // the new stripe sweeps into the rainbow, left to right
       showCaption(gc, TEXTS.bloom, 3);

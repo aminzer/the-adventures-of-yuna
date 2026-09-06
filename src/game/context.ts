@@ -21,7 +21,8 @@ export interface GameCtx {
   state: GameState;
   stateT: number;
   fade: number; // 0 = clear, 1 = black
-  afterFade: 'PLAYING' | 'NEXT_LEVEL' | 'FINALE';
+  afterFade: 'PLAYING' | 'NEXT_LEVEL' | 'CHAPTER_CARD' | 'FINALE';
+  finaleChapter: number; // which chapter's final scene is on screen
   levelIndex: number;
   colorsRestored: number;
   totalStars: number;
@@ -135,6 +136,7 @@ export function createGameCtx(canvas: HTMLCanvasElement): GameCtx {
     hintCooldown: 0,
     butterfly: null,
     finaleT: 0,
+    finaleChapter: 0,
     wings: null,
     player: {
       x: 0, y: 0, vx: 0, vy: 0,

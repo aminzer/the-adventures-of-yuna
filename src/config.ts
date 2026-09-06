@@ -77,5 +77,7 @@ export const C = {
   DESAT_ALPHA: 0.85,
 
   // The seven rainbow colors, in restore order
+  CHAPTER_CARD_TIME: 3.2, // the black "book page" with the chapter title
+  CHAPTER_FINALE_TIME: 12, // a non-final chapter's scene, before moving on
   RAINBOW: ['#e0524e', '#f29b38', '#f7d94c', '#7cc860', '#5aa8e8', '#7a6fd8', '#b07ad8'],
 } as const;

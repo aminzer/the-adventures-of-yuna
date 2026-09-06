@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createCanvas } from 'canvas';
-import { LEVELS } from '../src/levels';
+import { CHAPTERS, LEVELS } from '../src/levels';
 import { startGame } from '../src/game';
 import { setupDom, makeBot } from './harness';
 
@@ -27,12 +27,25 @@ function snap(name: string): void {
 
 let bloomFrames = 0;
 let finaleFrames = 0;
+let cardFrames = 0;
+let meadowFrames = 0;
+let partyFrames = 0;
 const levelStartT: Record<number, number> = {};
 const inLevel = (i: number, after: number): boolean =>
   debug.levelIndex() === i && debug.state() === 'PLAYING' && i in levelStartT && simT > levelStartT[i] + after;
 
 const wanted: Record<string, () => boolean> = {
+  '00-chapter-card': () => {
+    if (debug.state() !== 'CHAPTER_CARD') return false;
+    cardFrames++;
+    return cardFrames > 60;
+  },
   '00-intro': () => inLevel(0, 1.0),
+  '00-finale-meadow': () => {
+    if (debug.state() !== 'FINALE' || debug.finaleChapter() !== 0) return false;
+    meadowFrames++;
+    return meadowFrames > 60;
+  },
   '01-grey-world': () => inLevel(1, 1.5),
   '02-carrying': () => debug.levelIndex() === 1 && !!debug.player.carrying,
   '03-giving': () => debug.levelIndex() === 1 && debug.state() === 'GIVING',
@@ -47,6 +60,11 @@ const wanted: Record<string, () => boolean> = {
   '08-level5-squirrels': () => inLevel(5, 1.5),
   '09-level6-owl': () => inLevel(6, 1.0),
   '10-level7-fox-hug': () => debug.levelIndex() === 7 && debug.state() === 'GIVING',
+  '10-finale-rainbow-party': () => {
+    if (debug.state() !== 'FINALE' || debug.finaleChapter() !== 1) return false;
+    partyFrames++;
+    return partyFrames > 60;
+  },
   '11-level8-wings': () => debug.levelIndex() === 8 && !!debug.wings() && !debug.wings()!.taken && inLevel(8, 1.2),
   '12-level8-flying': () =>
     debug.levelIndex() === 8 && debug.player.hasWings && !debug.player.onGround && debug.player.y < 500 && debug.state() === 'PLAYING',
@@ -54,7 +72,7 @@ const wanted: Record<string, () => boolean> = {
   '14-level10-water': () => debug.levelIndex() === 10 && debug.state() === 'PLAYING' && debug.player.y > 240,
   '15-level11-chase': () => inLevel(11, 1.2),
   '16-finale': () => {
-    if (debug.state() !== 'FINALE') return false;
+    if (debug.state() !== 'FINALE' || debug.finaleChapter() !== CHAPTERS.length - 1) return false;
     finaleFrames++;
     return finaleFrames > 90;
   },

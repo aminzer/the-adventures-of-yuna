@@ -6,6 +6,7 @@ import { updateBlooming } from './updateBlooming';
 import { updateLevelDone } from './updateLevelDone';
 import { updateFadeOut } from './updateFadeOut';
 import { updateFadeIn } from './updateFadeIn';
+import { updateChapterCard } from './updateChapterCard';
 import { updateFinale } from './updateFinale';
 import { updateFriendHops } from './updateFriendHops';
 import { playerCX } from './utils';
@@ -41,6 +42,7 @@ export function update(gc: GameCtx, dt: number): void {
     case 'LEVEL_DONE': updateLevelDone(gc, dt); break;
     case 'FADE_OUT': updateFadeOut(gc, dt); break;
     case 'FADE_IN': updateFadeIn(gc, dt); break;
+    case 'CHAPTER_CARD': updateChapterCard(gc, dt); break;
     case 'FINALE': updateFinale(gc, dt); break;
   }
   updateFriendHops(gc, dt);

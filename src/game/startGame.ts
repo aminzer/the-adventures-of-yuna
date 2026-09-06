@@ -5,7 +5,7 @@ import { C } from '../config';
 import { createGameCtx } from './context';
 import { setupResize } from './setupResize';
 import { setupInput } from './setupInput';
-import { loadLevel } from './loadLevel';
+import { enterChapterCard } from './enterChapterCard';
 import { update } from './update';
 import { render } from './render';
 import { solid } from './solid';
@@ -32,10 +32,9 @@ export function startGame(canvas: HTMLCanvasElement): GameDebug {
     requestAnimationFrame(frame);
   }
 
-  loadLevel(gc, 0);
-  gc.fade = 1;
-  gc.state = 'FADE_IN';
-  gc.afterFade = 'PLAYING';
+  // the game opens like a book — on the first chapter's title page
+  gc.levelIndex = 0;
+  enterChapterCard(gc);
   requestAnimationFrame(frame);
 
   // Read-only debug handle (used by the headless test tools; harmless in the browser).
@@ -46,6 +45,7 @@ export function startGame(canvas: HTMLCanvasElement): GameDebug {
     state: () => gc.state,
     levelIndex: () => gc.levelIndex,
     colorsRestored: () => gc.colorsRestored,
+    finaleChapter: () => gc.finaleChapter,
     totalStars: () => gc.totalStars,
     wings: () => gc.wings,
     bells: () => gc.bells,

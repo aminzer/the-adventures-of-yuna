@@ -1,4 +1,4 @@
-import { LEVELS } from '../levels';
+import { stripesBeforeLevel } from '../levels';
 import type { GameCtx } from './context';
 import { loadLevel } from './loadLevel';
 
@@ -7,7 +7,7 @@ import { loadLevel } from './loadLevel';
 // (practice levels earn no stripe, so they don't count).
 export function jumpToLevel(gc: GameCtx, idx: number): void {
   gc.levelIndex = idx;
-  gc.colorsRestored = LEVELS.slice(0, idx).filter((l) => !l.practice).length;
+  gc.colorsRestored = stripesBeforeLevel(idx);
   gc.stripeFill = 1;
   loadLevel(gc, idx);
   gc.fade = 1;
