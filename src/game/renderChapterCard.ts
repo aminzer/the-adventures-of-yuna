@@ -7,7 +7,8 @@ import type { GameCtx } from './context';
 // and the title, gently fading in.
 export function renderChapterCard(gc: GameCtx): void {
   const ctx = gc.ctx;
-  const alpha = Math.min(1, gc.stateT / 0.6) * Math.min(1, (C.CHAPTER_CARD_TIME - gc.stateT) / 0.5);
+  // fade in at the start; fade out only once the narration is done (updateChapterCard drives cardOut)
+  const alpha = Math.min(1, gc.stateT / 0.6) * (1 - Math.min(1, gc.cardOut / C.CHAPTER_CARD_OUT));
   const chapter = chapterOfLevel(gc.levelIndex);
   const nth = chapterIndexOfLevel(gc.levelIndex);
 

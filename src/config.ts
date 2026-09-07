@@ -77,7 +77,9 @@ export const C = {
   DESAT_ALPHA: 0.85,
 
   // The seven rainbow colors, in restore order
-  CHAPTER_CARD_TIME: 3.2, // the black "book page" with the chapter title
+  CHAPTER_CARD_TIME: 3.2, // the black "book page" with the chapter title — a MINIMUM: it also waits for the narration to finish
+  CHAPTER_CARD_MAX: 12, // …but never longer than this, even if audio misbehaves
+  CHAPTER_CARD_OUT: 0.5, // the title's little fade-out before the level opens
   CHAPTER_FINALE_TIME: 12, // a non-final chapter's scene, before moving on
   RAINBOW: ['#e0524e', '#f29b38', '#f7d94c', '#7cc860', '#5aa8e8', '#7a6fd8', '#b07ad8'],
 } as const;

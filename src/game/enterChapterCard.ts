@@ -9,6 +9,7 @@ import type { GameCtx } from './context';
 export function enterChapterCard(gc: GameCtx): void {
   gc.state = 'CHAPTER_CARD';
   gc.stateT = 0;
+  gc.cardOut = 0;
   gc.fade = 1;
   gc.caption = null; // the title is drawn big in the middle, not as a subtitle
   const { slot, shown } = captionText(chapterOfLevel(gc.levelIndex).title);

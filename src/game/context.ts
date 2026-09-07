@@ -23,6 +23,7 @@ export interface GameCtx {
   fade: number; // 0 = clear, 1 = black
   afterFade: 'PLAYING' | 'NEXT_LEVEL' | 'CHAPTER_CARD' | 'FINALE';
   finaleChapter: number; // which chapter's final scene is on screen
+  cardOut: number; // chapter card: seconds since it started fading away (0 = still showing)
   levelIndex: number;
   colorsRestored: number;
   totalStars: number;
@@ -137,6 +138,7 @@ export function createGameCtx(canvas: HTMLCanvasElement): GameCtx {
     butterfly: null,
     finaleT: 0,
     finaleChapter: 0,
+    cardOut: 0,
     wings: null,
     player: {
       x: 0, y: 0, vx: 0, vy: 0,

@@ -97,6 +97,12 @@ export function speak(text: string, slotKey?: string): void {
   playChain(clipUrls(slotKey ?? ttsKey, ttsKey), spoken);
 }
 
+// Is the narrator still saying something (a clip or the browser's synthesis)?
+export function isSpeaking(): boolean {
+  if (clip && !clip.paused && !clip.ended) return true;
+  return synth()?.speaking ?? false;
+}
+
 export function cancelSpeech(): void {
   stopClip();
   synth()?.cancel();
@@ -116,4 +122,4 @@ export function toggleVoice(): boolean {
   return enabled;
 }
 
-export const voice = { speak, cancelSpeech, setVoiceMuted, toggleVoice, spokenText, voiceKey, isEnabled: () => enabled };
+export const voice = { speak, cancelSpeech, isSpeaking, setVoiceMuted, toggleVoice, spokenText, voiceKey, isEnabled: () => enabled };
