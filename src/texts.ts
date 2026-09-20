@@ -54,6 +54,19 @@ export const TEXTS = {
   finaleStars: 'Посмотри, как много в небе сияет звёздочек — все, что ты собрала!',
 } as const;
 
+// Each fetch friend's plea — spoken the first time Yuna comes close. Only
+// after the plea does the wished-for item appear in the world.
+export const ASK_HELP: Partial<Record<FriendKind, string>> = {
+  mama: 'Юна, сорви для меня, пожалуйста, красивый цветочек!',
+  bunny: 'Юна, помоги! Я потерял свою вкусную морковку…',
+  bird: 'Юна, помоги! Мне так хочется сладкую ягодку…',
+  turtle: 'Юна, найди для меня, пожалуйста, красивый цветочек!',
+  flowerbed: 'Мы совсем засыхаем… Принеси нам, пожалуйста, леечку!',
+  squirrel: 'Юна, помоги! Мы с братиком потеряли наши жёлуди…',
+  babystar: 'Юна, помоги! Я потеряла свой огонёк…',
+  octopus: 'Юна, помоги! Моя жемчужина укатилась далеко на дно…',
+};
+
 // What to say the moment a friend becomes happy.
 export function satisfiedText(level: LevelDef, friend: FriendKind): string {
   if (friend === 'mama') return 'Мама так рада! Теперь Юна готова к приключениям.';

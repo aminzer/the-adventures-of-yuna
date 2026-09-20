@@ -63,6 +63,7 @@ export const C = {
 
   // Sequence timings (seconds)
   DWELL_TIME: 1.3, // staying close this long completes a dwell deed (wake/hug)
+  ASK_RADIUS: 130, // the friend notices Yuna coming and asks for help
   GIVE_TIME: 0.95, // item arcs from Yuna to the friend
   BLOOM_TIME: 2.6, // color circle grows from the friend
   LEVEL_DONE_TIME: 2.8, // free celebration before fading to the next level

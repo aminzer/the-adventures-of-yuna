@@ -19,6 +19,11 @@ ends the game). More chapters can be added by extending `CHAPTERS`.
   it (the "wolf" became a puppy playing tag — being caught IS the happy win).
 - **Keyboard only, two concepts:** ←/→ walk, Space/↑ jump. No interaction key —
   pickup/give/wake/hug happen automatically on proximity.
+- **Fetch levels tell a story in order**: Yuna first MEETS the friend (placed
+  between the start and the item on every map), the friend voices a plea
+  (`ASK_HELP` in texts.ts, triggered at `ASK_RADIUS`); only then the item
+  appears in the world (hidden and unpickable before), and Yuna brings it
+  back. The friend's thought bubble also appears only after the plea.
 - **Pictures carry the gameplay, text is narration on top.** Thought bubbles
   show what a friend needs. Russian subtitles + voice-over tell the story; a
   child who cannot read must still be able to play.

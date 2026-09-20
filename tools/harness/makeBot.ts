@@ -14,6 +14,8 @@ export function makeBot(debug: GameDebug, listeners: Record<string, Listener[]>)
   let nextHop = 0.7; // randomized so rescue loops can't phase-lock the bot
   let blockedN = 0; // consecutive ticks of "trying to rise but pinned under a cloud"
   let sideDir = 1;
+  let dropDir = 1;
+  let dropUntil = 0;
   let sidestepUntil = 0;
 
   function setKey(code: string, want: boolean): void {
@@ -67,7 +69,9 @@ export function makeBot(debug: GameDebug, listeners: Record<string, Listener[]>)
 
       const byDistance = <T extends { x: number }>(list: T[]): T | undefined =>
         list.slice().sort((a, b) => Math.abs(a.x - player.x) - Math.abs(b.x - player.x))[0];
-      const item = byDistance(debug.items().filter((i) => i.state === 'world'));
+      // fetch items only exist once a friend has asked for help — meet them first
+      const helpAsked = debug.friends().some((f) => f.asked);
+      const item = helpAsked ? byDistance(debug.items().filter((i) => i.state === 'world')) : null;
       const friend = byDistance(debug.friends().filter((f) => !f.satisfied));
       const wings = debug.wings();
       let tx: number | null = null;
@@ -154,10 +158,20 @@ export function makeBot(debug: GameDebug, listeners: Record<string, Listener[]>)
       }
 
       // the friend is waiting right below us (we're camped on a platform
-      // above it) — step off the ledge instead of standing there forever
-      if (!item && friend && player.onGround && friend.y > player.y + player.h + 40 && Math.abs(tx - cx) < 30) {
-        setKey('ArrowRight', true);
-        setKey('ArrowLeft', false);
+      // above it) — walk to the NEAREST edge of this platform and step off,
+      // holding the direction so we don't oscillate back over the friend
+      if (!item && friend && player.onGround && friend.y > player.y + player.h + 40 && Math.abs(tx - cx) < 60) {
+        if (simT >= dropUntil) {
+          const feetY = player.y + player.h + 6;
+          let left = 9;
+          let right = 9;
+          for (let st = 1; st <= 6; st++) if (!debug.solidAt(cx - st * 48, feetY)) { left = st; break; }
+          for (let st = 1; st <= 6; st++) if (!debug.solidAt(cx + st * 48, feetY)) { right = st; break; }
+          dropDir = left < right ? -1 : 1;
+          dropUntil = simT + 0.7;
+        }
+        setKey('ArrowRight', dropDir > 0);
+        setKey('ArrowLeft', dropDir < 0);
         setKey('Space', false);
         return;
       }

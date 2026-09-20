@@ -5,7 +5,7 @@
 // chapter's final scene. Lines shared by several levels (rescue, bloom…)
 // appear once, where they are heard first.
 import { CHAPTERS, type ChapterDef, type LevelDef } from './levels';
-import { TEXTS, satisfiedText } from './texts';
+import { ASK_HELP, TEXTS, satisfiedText } from './texts';
 import { TEXT_OVERRIDES } from './textOverrides';
 import { spokenText, voiceKey } from './voiceText';
 
@@ -27,6 +27,7 @@ function levelLines(L: LevelDef): string[] {
   if (L.water) out.push(TEXTS.airLow, TEXTS.bubbleLift);
   if (L.deed === 'song') out.push(TEXTS.listen, TEXTS.yourTurn, TEXTS.wrongNote);
   if (L.deed === 'chase') out.push(TEXTS.chaseOn);
+  if (L.deed === 'fetch' && ASK_HELP[L.friend]) out.push(ASK_HELP[L.friend]!);
   out.push(TEXTS.rescue); // a fall can happen on any level; heard first on the earliest
   if (L.deed === 'fetch' && L.item) out.push(TEXTS.pickup(L.item));
   out.push(satisfiedText(L, L.friend));

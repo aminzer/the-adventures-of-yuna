@@ -170,9 +170,11 @@ export function renderWorld(gc: GameCtx): void {
     ctx.restore();
   }
 
-  // items waiting in the world — drawn in color so they are easy to spot
+  // items waiting in the world — drawn in color so they are easy to spot.
+  // On fetch levels they appear only after the friend has asked for help.
+  const itemsRevealed = level.deed !== 'fetch' || gc.friends.some((f) => f.asked);
   for (const it of gc.items) {
-    if (it.state === 'world') {
+    if (it.state === 'world' && itemsRevealed) {
       ctx.save();
       ctx.fillStyle = 'rgba(0,0,0,0.1)';
       art.ellipse(ctx, it.x, it.homeY + 18, 12, 3.5);
@@ -254,6 +256,7 @@ export function renderWorld(gc: GameCtx): void {
   for (const f of gc.friends) {
     const isGiving = gc.state === 'GIVING' && gc.givingFriend === f;
     if (f.satisfied && !isGiving) continue;
+    if (level.deed === 'fetch' && !f.asked) continue; // the wish appears once the friend has asked
     const heartAmt = isGiving ? Math.min(1, gc.stateT / C.GIVE_TIME) : 0;
     const dwellPulse = level.deed === 'dwell' ? Math.min(0.18, f.dwellT * 0.15) : 0;
     const pulse = 1 + Math.sin(f.t * 2.5) * 0.05 + f.bounce * 0.18 + dwellPulse + (gc.idleT > 25 ? Math.sin(gc.globalT * 6) * 0.06 : 0);

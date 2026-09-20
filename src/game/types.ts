@@ -7,6 +7,7 @@ export interface Friend {
   x: number;
   y: number;
   satisfied: boolean;
+  asked: boolean; // fetch levels: the friend has met Yuna and asked for help
   hop: number;
   hopV: number;
   bounce: number;

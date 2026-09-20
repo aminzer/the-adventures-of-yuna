@@ -1,7 +1,7 @@
 import { C } from '../config';
 import { LEVELS } from '../levels';
 import { audio } from '../audio';
-import { TEXTS } from '../texts';
+import { ASK_HELP, TEXTS } from '../texts';
 import { BUBBLE_H } from './constants';
 import type { GameCtx } from './context';
 import { moveX } from './moveX';
@@ -170,8 +170,8 @@ export function updatePlaying(gc: GameCtx, dt: number): void {
     }
   }
 
-  // auto pickup
-  if (!player.carrying) {
+  // auto pickup — a wished-for item exists only once its friend has asked
+  if (!player.carrying && (level.deed !== 'fetch' || gc.friends.some((f) => f.asked))) {
     for (const it of gc.items) {
       if (it.state === 'world' && dist(playerCX(player), playerCY(player), it.x, it.y) < C.PICKUP_RADIUS) {
         it.state = 'carried';
@@ -194,6 +194,16 @@ export function updatePlaying(gc: GameCtx, dt: number): void {
       if (f.satisfied) continue;
       const d = dist(playerCX(player), playerCY(player), f.x, f.y - 24);
       if (deed === 'fetch') {
+        // the first meeting: the friend asks Yuna for help — and only then
+        // does the wished-for item appear somewhere further along the road
+        if (!f.asked && d < C.ASK_RADIUS) {
+          f.asked = true;
+          f.bounce = 1;
+          audio.play('hint');
+          const plea = ASK_HELP[f.kind];
+          // twin friends (the squirrels) share one plea — say it once
+          if (plea && !gc.friends.some((o) => o !== f && o.asked)) showCaption(gc, plea, 6);
+        }
         if (player.carrying && d < C.GIVE_RADIUS) {
           beginGiving(gc, f);
           break;
