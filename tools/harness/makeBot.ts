@@ -76,7 +76,9 @@ export function makeBot(debug: GameDebug, listeners: Record<string, Listener[]>)
       const wings = debug.wings();
       let tx: number | null = null;
       let ty: number | null = null;
+      const waitingFly = byDistance(debug.fireflies().filter((f) => f.state === 'waiting'));
       if (wings && !wings.taken) { tx = wings.x; ty = wings.y; } // wings first — nothing else is reachable
+      else if (waitingFly) { tx = waitingFly.x; ty = waitingFly.y; }
       else if (player.carrying && friend) { tx = friend.x; ty = friend.y; }
       else if (item) { tx = item.x; ty = item.y; }
       else if (friend) { tx = friend.x; ty = friend.y; }
@@ -126,7 +128,7 @@ export function makeBot(debug: GameDebug, listeners: Record<string, Listener[]>)
       }
 
       // standing next to a friend is the goal itself (dwell deeds) — be still
-      if (!item && friend && Math.abs(friend.x - cx) < 40 && Math.abs(friend.y - (player.y + 22)) < 60) {
+      if (!item && friend && tx === friend.x && Math.abs(friend.x - cx) < 40 && Math.abs(friend.y - (player.y + 22)) < 60) {
         setKey('ArrowRight', false);
         setKey('ArrowLeft', false);
         setKey('Space', false);

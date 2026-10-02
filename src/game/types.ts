@@ -2,6 +2,21 @@ import type { FriendKind, ItemKind } from '../levels';
 
 export type GameState = 'PLAYING' | 'GIVING' | 'BLOOMING' | 'LEVEL_DONE' | 'FADE_OUT' | 'FADE_IN' | 'CHAPTER_CARD' | 'FINALE';
 
+export interface Firefly {
+  x: number;
+  y: number;
+  homeX: number;
+  homeY: number;
+  state: 'waiting' | 'following' | 'delivered';
+  order: number; // place in the little procession behind Yuna
+  t: number;
+}
+
+export interface Bush {
+  x: number;
+  y: number; // ground line the bush sits on
+}
+
 export interface Friend {
   kind: FriendKind;
   x: number;
@@ -133,6 +148,8 @@ export interface GameDebug {
   totalStars: () => number;
   wings: () => Wings | null;
   bells: () => Bell[];
+  fireflies: () => Firefly[];
+  hideFound: () => number;
   songPos: () => number;
   /** Is the world tile at this pixel position solid? (for test-bot edge sense) */
   solidAt: (px: number, py: number) => boolean;

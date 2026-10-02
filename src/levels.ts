@@ -20,6 +20,8 @@
 //   W  magic wings pickup — Yuna can fly for the rest of the level
 //      (hold jump to flutter up, release to float gently down)
 //   B  bell-flower (song levels) — jump on it to play its note
+//   g  firefly (gather levels) — flies after Yuna once she comes close
+//   H  hide-bush (play levels) — the fox hides behind these
 //   T  tree (decoration)
 //   f  flower patch (decoration)
 //   c  background cloud (decoration)
@@ -33,6 +35,10 @@
 //   song  — the friend sings a short melody; jump on the bell-flowers in
 //           the same order (`melody` indexes the bells left to right)
 //   chase — a playful friend keeps just out of reach; corner it and tag it
+//   gather — little fireflies join Yuna one by one and follow her; bring
+//           them all to the sleeping friend to light up its night
+//   play  — hide-and-seek: the friend hides behind bushes (ears peeking!),
+//           find it three times; the last time it runs to Yuna for a hug
 //
 // Kindness design rules (keep levels gentle):
 //   - gaps in the ground are at most 3 tiles wide
@@ -48,15 +54,15 @@ export type FriendKind =
   | 'bunny' | 'bird' | 'turtle' | 'flowerbed' | 'squirrel' | 'owl' | 'fox' | 'babystar'
   | 'lark' | 'octopus' | 'puppy' | 'mama';
 export type ItemKind = 'carrot' | 'berry' | 'flower' | 'wateringcan' | 'acorn' | 'glow' | 'pearl';
-export type BubbleIcon = ItemKind | 'heart' | 'note' | 'ball';
+export type BubbleIcon = ItemKind | 'heart' | 'note' | 'ball' | 'firefly';
 
 export interface LevelDef {
   name: string;
   color: string;
   friend: FriendKind;
-  deed: 'fetch' | 'dwell' | 'song' | 'chase';
+  deed: 'fetch' | 'dwell' | 'song' | 'chase' | 'gather' | 'play';
   item: ItemKind | null; // fetch levels only
-  bubble?: 'heart' | 'note' | 'ball'; // non-fetch levels: the icon in the friend's wish
+  bubble?: 'heart' | 'note' | 'ball' | 'firefly'; // non-fetch levels: the icon in the friend's wish
   sky?: boolean; // sky level: platforms are clouds, made for flying
   water?: number; // underwater level: everything below this row is water
   melody?: number[]; // song levels: bell indexes (left to right) to play
@@ -101,20 +107,20 @@ const ALL_LEVELS: LevelDef[] = [
     friend: 'bunny',
     deed: 'fetch',
     item: 'carrot',
-    story: 'Буря спрятала все цвета… Зайка грустит: он потерял морковку!',
+    story: 'Буря унесла все цвета… А впереди на полянке кто-то грустит. Подойди, Юна, узнай, что случилось!',
     map: [
-      '........................................',
-      '........c....................c..........',
-      '........................................',
-      '........................................',
-      '.....................*..................',
-      '....................===.................',
-      '........*.................*.............',
-      '.......===...............===............',
-      '..P.T............F............f....I....',
-      '#############...########################',
-      '#############...########################',
-      '#############...########################',
+      '..........................',
+      '......c.............c.....',
+      '..........................',
+      '..........................',
+      '..........................',
+      '..........................',
+      '.....*..........*.........',
+      '...............===........',
+      '..P..T..F.............I.f.',
+      '##########...#############',
+      '##########...#############',
+      '##########...#############',
     ],
   },
   {
@@ -124,7 +130,7 @@ const ALL_LEVELS: LevelDef[] = [
     friend: 'bird',
     deed: 'fetch',
     item: 'berry',
-    story: 'Птичка мечтает о сладкой ягодке. Поможем ей!',
+    story: 'Слышишь? Кто-то тихонько чирикает где-то наверху… Давай подойдём и спросим, что случилось.',
     map: [
       '........................................',
       '..............c..................c......',
@@ -147,7 +153,7 @@ const ALL_LEVELS: LevelDef[] = [
     friend: 'turtle',
     deed: 'fetch',
     item: 'flower',
-    story: 'Черепашка мечтает о красивом цветочке.',
+    story: 'Кто-то грустно вздыхает совсем рядом. Подойди, Юна, — вдруг нужна твоя помощь?',
     map: [
       '........................................',
       '..........c................c............',
@@ -170,7 +176,7 @@ const ALL_LEVELS: LevelDef[] = [
     friend: 'flowerbed',
     deed: 'fetch',
     item: 'wateringcan',
-    story: 'Цветочки совсем поникли. Им очень нужна водичка!',
+    story: 'Цветочки на клумбе поникли и о чём-то шепчут. Подойди к ним поближе и послушай.',
     map: [
       '........................................',
       '.......c....................c...........',
@@ -193,7 +199,7 @@ const ALL_LEVELS: LevelDef[] = [
     friend: 'squirrel',
     deed: 'fetch',
     item: 'acorn',
-    story: 'Бельчата хотят жёлуди. Каждому — по одному!',
+    story: 'Слышишь, как шуршит в ветках? Это бельчата о чём-то спорят. Подойди, Юна, узнай, в чём дело!',
     map: [
       '........................................',
       '....c...............c...............c...',
@@ -203,7 +209,7 @@ const ALL_LEVELS: LevelDef[] = [
       '........................................',
       '...I............*............I..........',
       '..===..........===..........===.........',
-      '.P...........F....T......f.........F....',
+      '.P..........F.F...T......f..............',
       '#######...##########...#################',
       '#######...##########...#################',
       '#######...##########...#################',
@@ -214,10 +220,10 @@ const ALL_LEVELS: LevelDef[] = [
     music: 'twilight',
     color: '#7a6fd8',
     friend: 'owl',
-    deed: 'dwell',
+    deed: 'gather',
     item: null,
-    bubble: 'note',
-    story: 'Совушка крепко заснула. Постой рядом с ней тихонько…',
+    bubble: 'firefly',
+    story: 'Совушка уснула в темноте, а её светлячки-фонарики разлетелись. Собери их для совушки!',
     map: [
       '........................................',
       '......c...............c..........c......',
@@ -225,9 +231,9 @@ const ALL_LEVELS: LevelDef[] = [
       '....................*...................',
       '...................===..................',
       '........................................',
-      '..*...........*..........*..............',
+      '..*...........g*.........g*.............',
       '.===.........===........===.............',
-      '....P......T....f.............F....T....',
+      '....P.....g.T...f................F.T....',
       '######...#########...###################',
       '######...#########...###################',
       '######...#########...###################',
@@ -238,10 +244,10 @@ const ALL_LEVELS: LevelDef[] = [
     music: 'lullaby',
     color: '#b07ad8',
     friend: 'fox',
-    deed: 'dwell',
+    deed: 'play',
     item: null,
-    bubble: 'heart',
-    story: 'Лисёнку очень одиноко. Побудь с ним рядом — обними его!',
+    bubble: 'ball',
+    story: 'Лисёнок грустит совсем один… А больше всего на свете он любит играть в прятки!',
     map: [
       '........................................',
       '........c................c..............',
@@ -251,7 +257,7 @@ const ALL_LEVELS: LevelDef[] = [
       '........................................',
       '...........*..........*...........*.....',
       '..........===........===.........===....',
-      '..P..........T......f..........T.....F..',
+      '..P.......F..T.H....f....H......T....H..',
       '#####...########...########...##########',
       '#####...########...########...##########',
       '#####...########...########...##########',
@@ -269,7 +275,7 @@ const ALL_LEVELS: LevelDef[] = [
     deed: 'fetch',
     item: 'glow',
     sky: true,
-    story: 'Звёздочка упала с неба и потеряла огонёк. Птичка дарит Юне крылья! Отдыхай на облачках.',
+    story: 'Высоко в облаках кто-то мерцает и зовёт на помощь. Птичка дарит Юне крылья — лети туда и отдыхай на облачках!',
     map: [
       '........................................',
       '.............................I..........',
@@ -334,7 +340,7 @@ const ALL_LEVELS: LevelDef[] = [
     deed: 'fetch',
     item: 'pearl',
     water: 3,
-    story: 'Осьминожка потерял жемчужину на дне моря. Не забывай выныривать, чтобы вдохнуть!',
+    story: 'Глубоко в море, среди водорослей, кто-то грустит. Нырни к нему, Юна, — только не забывай выныривать, чтобы вдохнуть!',
     map: [
       '........................................',
       '..P.......c..............c..............',

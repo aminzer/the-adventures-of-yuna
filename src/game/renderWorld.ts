@@ -83,6 +83,15 @@ export function renderWorld(gc: GameCtx): void {
     }
   }
 
+  // hide-and-seek bushes — drawn after the fox so they cover its body and
+  // leave just the ears and tail peeking over the top
+  for (const b of gc.bushes) {
+    og.save();
+    og.translate(b.x, b.y);
+    art.drawBush(og, gc.globalT + b.x);
+    og.restore();
+  }
+
   // the sea, over everything in it (its blue also returns with the bloom)
   const level = LEVELS[gc.levelIndex];
   if (level.water !== undefined) {
@@ -241,6 +250,14 @@ export function renderWorld(gc: GameCtx): void {
   }
 
 
+  // the owl's fireflies — tiny always-colored lanterns, even in the grey world
+  for (const fl of gc.fireflies) {
+    ctx.save();
+    ctx.translate(fl.x, fl.y);
+    art.drawFirefly(ctx, fl.t);
+    ctx.restore();
+  }
+
   // carried / tweening item
   for (const it of gc.items) {
     if (it.state === 'carried' || it.state === 'tween') {
@@ -257,6 +274,7 @@ export function renderWorld(gc: GameCtx): void {
     const isGiving = gc.state === 'GIVING' && gc.givingFriend === f;
     if (f.satisfied && !isGiving) continue;
     if (level.deed === 'fetch' && !f.asked) continue; // the wish appears once the friend has asked
+    if (level.deed === 'play' && f.asked && !isGiving) continue; // no bubble over a hiding fox — the ears are the hint
     const heartAmt = isGiving ? Math.min(1, gc.stateT / C.GIVE_TIME) : 0;
     const dwellPulse = level.deed === 'dwell' ? Math.min(0.18, f.dwellT * 0.15) : 0;
     const pulse = 1 + Math.sin(f.t * 2.5) * 0.05 + f.bounce * 0.18 + dwellPulse + (gc.idleT > 25 ? Math.sin(gc.globalT * 6) * 0.06 : 0);

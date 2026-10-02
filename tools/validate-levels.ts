@@ -52,6 +52,12 @@ for (const L of LEVELS) {
       gap = 0;
     }
   }
+  const fireflyCount = L.map.join('').split('g').length - 1;
+  const bushCount = L.map.join('').split('H').length - 1;
+  if (L.deed === 'gather' && fireflyCount < 2) fail(`${L.name}: gather level needs at least 2 fireflies (g), got ${fireflyCount}`);
+  if (L.deed !== 'gather' && fireflyCount > 0) fail(`${L.name}: fireflies (g) only belong on gather levels`);
+  if (L.deed === 'play' && bushCount < 2) fail(`${L.name}: play level needs at least 2 hide-bushes (H), got ${bushCount}`);
+  if (L.deed !== 'play' && bushCount > 0) fail(`${L.name}: hide-bushes (H) only belong on play levels`);
   if (L.deed === 'chase' && gapCount > 0) fail(`${L.name}: chase levels must have no gaps`);
 
   // every platform must be reachable: some other standable surface within

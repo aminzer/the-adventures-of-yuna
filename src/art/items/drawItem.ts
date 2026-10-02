@@ -24,6 +24,24 @@ export function drawItem(g: Ctx, kind: BubbleIcon, s = 1): void {
   else if (kind === 'note') drawNote(g);
   else if (kind === 'pearl') drawPearl(g);
   else if (kind === 'ball') drawBall(g);
+  else if (kind === 'firefly') {
+    // tiny glowing firefly for the owl's wish bubble
+    g.fillStyle = 'rgba(255, 226, 130, 0.45)';
+    g.beginPath();
+    g.arc(0, 0, 11, 0, Math.PI * 2);
+    g.fill();
+    g.fillStyle = '#ffd24d';
+    g.beginPath();
+    g.arc(0, 0, 5, 0, Math.PI * 2);
+    g.fill();
+    g.fillStyle = 'rgba(255,255,255,0.85)';
+    g.beginPath();
+    g.ellipse(-5, -6, 5, 2.6, -0.6, 0, Math.PI * 2);
+    g.fill();
+    g.beginPath();
+    g.ellipse(5, -6, 5, 2.6, 0.6, 0, Math.PI * 2);
+    g.fill();
+  }
   else drawHeart(g, 10, '#f0637f');
   g.restore();
 }

@@ -32,7 +32,7 @@ const FRIEND_DAT: Record<FriendKind, string> = {
 export const TEXTS = {
   pickup: (item: ItemKind): string => `Юна нашла ${ITEM_ACC[item]}!`,
   given: (item: ItemKind, friend: FriendKind): string => `Юна подарила ${ITEM_ACC[item]} ${FRIEND_DAT[friend]}! ❤`,
-  bloom: 'Цвета возвращаются! 🌈',
+  bloom: 'Цвета радуги возвращаются! 🌈',
   star: 'Звёздочка! ✨',
   wings: 'У Юны выросли волшебные крылья! Держи прыжок, чтобы лететь.',
   wingsTired: 'Крылышки устали. Отдохни на облачке!',
@@ -46,6 +46,11 @@ export const TEXTS = {
   chaseOn: 'Догонялки начались! Щенок водит — убегай!',
   introJump: 'Здорово! Теперь прыгни: ПРОБЕЛ или стрелка ↑!',
   introGo: 'Ты всё умеешь! Собери звёздочки и отнеси маме цветочек.',
+  fireflyFollow: 'Светлячок полетел за Юной! Собери их всех.',
+  fireflyHome: 'Светлячок сел рядом с совушкой!',
+  hidePlea: 'Юна, давай поиграем в прятки! Попробуй меня найти!',
+  hideFound: 'Нашла! Лисёнок хихикает — и прячется снова…',
+  hideLast: 'Опять нашла! Лисёнок бежит обниматься!',
   introDone: 'Юна всему научилась! Пора в путь — спасать радугу!',
   finale: 'Ура! Все цвета вернулись! Спасибо, Юна!',
   rainbowNext: 'Но приключения Юны только начинаются…',
@@ -72,8 +77,8 @@ export function satisfiedText(level: LevelDef, friend: FriendKind): string {
   if (friend === 'mama') return 'Мама так рада! Теперь Юна готова к приключениям.';
   if (level.deed === 'fetch' && level.item) return TEXTS.given(level.item, friend);
   switch (friend) {
-    case 'owl': return 'Совушка проснулась! Доброе утро!';
-    case 'fox': return 'Лисёнок больше не одинок! ❤';
+    case 'owl': return 'Светлячки светят совушке! Она проснулась — как уютно!';
+    case 'fox': return 'Как весело было играть! Теперь Юна и лисёнок — лучшие друзья. ❤';
     case 'lark': return 'Песенка вернулась! Жаворонок поёт!';
     case 'puppy': return 'Щенок догнал Юну! Ура, как весело!';
     default: return 'Какая ты добрая, Юна!';

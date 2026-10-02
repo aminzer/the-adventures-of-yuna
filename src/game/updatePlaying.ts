@@ -12,6 +12,8 @@ import { updateRescue } from './updateRescue';
 import { updateBubbleLift } from './updateBubbleLift';
 import { updateCarried } from './updateCarried';
 import { updateSong } from './updateSong';
+import { updateGather } from './updateGather';
+import { updateHideSeek } from './updateHideSeek';
 import { updateChase } from './updateChase';
 import { updateIntro } from './updateIntro';
 import { beginGiving } from './beginGiving';
@@ -189,7 +191,9 @@ export function updatePlaying(gc: GameCtx, dt: number): void {
 
   // near a friend (song and chase levels drive their friends separately)
   const deed = level.deed;
-  if (deed === 'fetch' || deed === 'dwell') {
+  if (deed === 'gather') updateGather(gc, dt);
+  else if (deed === 'play') updateHideSeek(gc, dt);
+  else if (deed === 'fetch' || deed === 'dwell') {
     for (const f of gc.friends) {
       if (f.satisfied) continue;
       const d = dist(playerCX(player), playerCY(player), f.x, f.y - 24);

@@ -32,6 +32,8 @@ export { drawFlowerPatch } from './world/drawFlowerPatch';
 export { drawBgCloud } from './world/drawBgCloud';
 export { drawRescueCloud } from './world/drawRescueCloud';
 export { drawSun } from './world/drawSun';
+export { drawFirefly } from './world/drawFirefly';
+export { drawBush } from './world/drawBush';
 export { drawMoon } from './world/drawMoon';
 export { drawHills } from './world/drawHills';
 export { drawRainbow } from './world/drawRainbow';

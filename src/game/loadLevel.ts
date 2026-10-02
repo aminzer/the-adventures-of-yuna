@@ -27,6 +27,10 @@ export function loadLevel(gc: GameCtx, i: number): void {
   gc.idleT = 0;
   gc.wings = null;
   gc.bells = [];
+  gc.fireflies = [];
+  gc.bushes = [];
+  gc.hideFound = 0;
+  gc.hideRun = null;
   gc.songPos = 0;
   gc.songDemo = { delay: 2.2, step: -1 };
   gc.airWarned = false;
@@ -68,6 +72,10 @@ export function loadLevel(gc: GameCtx, i: number): void {
         gc.stars.push({ x: cx, y: r * T + T / 2, collected: false, t: Math.random() * 9 });
       } else if (ch === 'W') {
         gc.wings = { x: cx, y: cellBottom - 26, taken: false };
+      } else if (ch === 'g') {
+        gc.fireflies.push({ x: cx, y: r * T + T / 2, homeX: cx, homeY: r * T + T / 2, state: 'waiting', order: 0, t: Math.random() * 9 });
+      } else if (ch === 'H') {
+        gc.bushes.push({ x: cx, y: cellBottom });
       } else if (ch === 'B') {
         gc.bells.push({ x: cx, y: cellBottom, idx: gc.bells.length, lit: 0 });
       } else if (ch === 'T' || ch === 'f' || ch === 'c' || ch === 'b' || ch === 's') {

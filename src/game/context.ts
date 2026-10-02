@@ -1,5 +1,5 @@
 import { C } from '../config';
-import type { Bell, Bloom, Butterfly, Caption, Decor, Friend, GameState, Item, Player, Particle, Star, Wings } from './types';
+import type { Bell, Bloom, Bush, Butterfly, Caption, Decor, Firefly, Friend, GameState, Item, Player, Particle, Star, Wings } from './types';
 
 // All mutable game state, shared by every update/render function.
 export interface GameCtx {
@@ -54,6 +54,10 @@ export interface GameCtx {
 
   // song levels
   bells: Bell[];
+  fireflies: Firefly[]; // gather levels: the owl's little lights
+  bushes: Bush[]; // play levels: where the fox hides
+  hideFound: number; // play levels: how many times the fox was found
+  hideRun: { fromX: number; toX: number; t: number; dur: number } | null;
   songPos: number;
   songDemo: { delay: number; step: number }; // step -1 = not singing right now
 
@@ -151,6 +155,10 @@ export function createGameCtx(canvas: HTMLCanvasElement): GameCtx {
     },
 
     bells: [],
+    fireflies: [],
+    bushes: [],
+    hideFound: 0,
+    hideRun: null,
     songPos: 0,
     songDemo: { delay: 1.2, step: -1 },
 

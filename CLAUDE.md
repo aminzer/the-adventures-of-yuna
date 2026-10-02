@@ -36,8 +36,15 @@ ends the game). More chapters can be added by extending `CHAPTERS`.
 - **Meditative music**, one mood per level, silent switch at the black frame
   with audible fade-out before / fade-in after.
 - **Kid-legible levels.** ASCII maps; gaps ≤ 3 tiles, platform rises ≤ 3, never
-  a platform overhanging a gap's jump runway (head-bonk trap). `check:levels`
-  enforces these — keep it green, extend it when adding rules.
+  a platform overhanging a gap's jump runway (head-bonk trap), and never place
+  a friend/bush the player must reach directly UNDER a platform (the bot — and
+  a child — gets stuck above it). `check:levels` enforces the map rules — keep
+  it green, extend it when adding rules.
+- **Rainbow chapter ramps simple → intricate**: red is short and flat; then
+  fetch levels grow; blue = two friends; indigo = `gather` deed (fireflies
+  join Yuna and follow her to the sleeping owl); violet = `play` deed
+  (hide-and-seek: the fox peeks from bushes, three finds, then runs in for
+  the hug). No plain "stand next to the friend" (dwell) levels remain.
 - **Rainbow stripes come only from chapter 1** (`ChapterDef.earnsStripe`) —
   exactly the 7 stripes of `C.RAINBOW`; the tutorial and chapter 2 levels
   don't add stripes. The practice level starts in full colour.

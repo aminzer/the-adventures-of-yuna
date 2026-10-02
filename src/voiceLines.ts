@@ -27,6 +27,8 @@ function levelLines(L: LevelDef): string[] {
   if (L.water) out.push(TEXTS.airLow, TEXTS.bubbleLift);
   if (L.deed === 'song') out.push(TEXTS.listen, TEXTS.yourTurn, TEXTS.wrongNote);
   if (L.deed === 'chase') out.push(TEXTS.chaseOn);
+  if (L.deed === 'gather') out.push(TEXTS.fireflyFollow, TEXTS.fireflyHome);
+  if (L.deed === 'play') out.push(TEXTS.hidePlea, TEXTS.hideFound, TEXTS.hideLast);
   if (L.deed === 'fetch' && ASK_HELP[L.friend]) out.push(ASK_HELP[L.friend]!);
   out.push(TEXTS.rescue); // a fall can happen on any level; heard first on the earliest
   if (L.deed === 'fetch' && L.item) out.push(TEXTS.pickup(L.item));
