@@ -5,7 +5,7 @@ import { C } from '../config';
 import { createGameCtx } from './context';
 import { setupResize } from './setupResize';
 import { setupInput } from './setupInput';
-import { enterChapterCard } from './enterChapterCard';
+import { enterChapterMenu } from './enterChapterMenu';
 import { update } from './update';
 import { render } from './render';
 import { solid } from './solid';
@@ -32,9 +32,8 @@ export function startGame(canvas: HTMLCanvasElement): GameDebug {
     requestAnimationFrame(frame);
   }
 
-  // the game opens like a book — on the first chapter's title page
-  gc.levelIndex = 0;
-  enterChapterCard(gc);
+  // the game opens on the chapter menu, the first chapter in focus
+  enterChapterMenu(gc, 0);
   requestAnimationFrame(frame);
 
   // Read-only debug handle (used by the headless test tools; harmless in the browser).

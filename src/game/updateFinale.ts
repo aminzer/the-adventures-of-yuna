@@ -55,7 +55,8 @@ export function updateFinale(gc: GameCtx, dt: number): void {
   if (kind !== 'night' && (gc.finaleT > C.CHAPTER_FINALE_TIME || (gc.anyKeyFrame && gc.finaleT > 4))) {
     gc.state = 'FADE_OUT';
     gc.stateT = 0;
-    gc.afterFade = 'CHAPTER_CARD';
+    gc.afterFade = 'CHAPTER_MENU';
+    gc.menuFocusOnFade = Math.min(CHAPTERS.length - 1, gc.finaleChapter + 1); // the next chapter, ready to go
     audio.fadeMusicOut(C.FADE_TIME);
   }
 }

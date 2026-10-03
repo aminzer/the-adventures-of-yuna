@@ -1,7 +1,6 @@
 // Every line the narrator can say — the single source of truth for the TTS
 // generator (npm run voice) and the recording studio (npm run studio).
-// Ordered the way a player hears them: chapter by chapter — the chapter card
-// title, its levels (story → mechanics → pickup → happy friend → bloom), the
+// Ordered the way a player hears them: chapter by chapter — its levels (story → mechanics → pickup → happy friend → bloom), the
 // chapter's final scene. Lines shared by several levels (rescue, bloom…)
 // appear once, where they are heard first.
 import { CHAPTERS, type ChapterDef, type LevelDef } from './levels';
@@ -59,7 +58,6 @@ export function allSpokenGroups(): SpokenGroup[] {
   const groups: SpokenGroup[] = [];
   let li = 0; // flat level number, matching the secret select: Shift+L then 1…9, 0, -, =
   for (const ch of CHAPTERS) {
-    groups.push(group(`${ch.title} — заставка главы`, [ch.title]));
     for (const L of ch.levels) {
       groups.push(group(`Уровень ${li + 1} · ${L.name} (Shift+L, ${'1234567890-='[li]})`, levelLines(L)));
       li++;

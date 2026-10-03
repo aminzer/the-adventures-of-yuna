@@ -35,8 +35,8 @@ const inLevel = (i: number, after: number): boolean =>
   debug.levelIndex() === i && debug.state() === 'PLAYING' && i in levelStartT && simT > levelStartT[i] + after;
 
 const wanted: Record<string, () => boolean> = {
-  '00-chapter-card': () => {
-    if (debug.state() !== 'CHAPTER_CARD') return false;
+  '00-chapter-menu': () => {
+    if (debug.state() !== 'CHAPTER_MENU') return false;
     cardFrames++;
     return cardFrames > 60;
   },

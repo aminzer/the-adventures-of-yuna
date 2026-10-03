@@ -1,6 +1,6 @@
 import type { FriendKind, ItemKind } from '../levels';
 
-export type GameState = 'PLAYING' | 'GIVING' | 'BLOOMING' | 'LEVEL_DONE' | 'FADE_OUT' | 'FADE_IN' | 'CHAPTER_CARD' | 'FINALE';
+export type GameState = 'PLAYING' | 'GIVING' | 'BLOOMING' | 'LEVEL_DONE' | 'FADE_OUT' | 'FADE_IN' | 'CHAPTER_MENU' | 'PAUSED' | 'FINALE';
 
 export interface Firefly {
   x: number;

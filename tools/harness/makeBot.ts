@@ -67,6 +67,14 @@ export function makeBot(debug: GameDebug, listeners: Record<string, Listener[]>)
         }
       }
 
+      // the chapter menu: the next chapter is already in focus — just press Space
+      if (debug.state() === 'CHAPTER_MENU') {
+        setKey('ArrowRight', false);
+        setKey('ArrowLeft', false);
+        setKey('Space', (Math.floor(simT * 4) % 2) === 0); // taps, so each press is a fresh keydown
+        return;
+      }
+
       const byDistance = <T extends { x: number }>(list: T[]): T | undefined =>
         list.slice().sort((a, b) => Math.abs(a.x - player.x) - Math.abs(b.x - player.x))[0];
       // fetch items only exist once a friend has asked for help — meet them first

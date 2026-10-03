@@ -7,9 +7,13 @@ valley's colours; Yuna (Юна) the unicorn brings one rainbow colour back per l
 helping a sad animal friend. Theme: kindness. The game is structured as
 CHAPTERS (src/levels.ts `CHAPTERS`): 0 «Обучение» (tutorial), 1 «Потерянная
 радуга» (7 colour levels), 2 «Новые приключения» (gold/song/water/chase).
-Each chapter opens with a voiced black title card and closes with its own
-final scene (meadow with mama / day rainbow party / the night star sky, which
-ends the game). More chapters can be added by extending `CHAPTERS`.
+The game opens on an interactive CHAPTER MENU (←/→ pick a chapter card,
+Space/↑ starts it; menus are NOT voiced; finished chapters get a mark); each
+chapter closes with its own final scene (meadow with mama / day rainbow party
+/ the night star sky, which ends the game) and returns to the menu with the
+next chapter in focus. Esc during play opens a small pause menu («Продолжить» /
+«В главное меню»); the world is frozen underneath, nothing is lost. More
+chapters can be added by extending `CHAPTERS`.
 
 ## Intent and locked design decisions (author's calls — do not relitigate)
 

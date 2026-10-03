@@ -21,9 +21,18 @@ export interface GameCtx {
   state: GameState;
   stateT: number;
   fade: number; // 0 = clear, 1 = black
-  afterFade: 'PLAYING' | 'NEXT_LEVEL' | 'CHAPTER_CARD' | 'FINALE';
+  afterFade: 'PLAYING' | 'NEXT_LEVEL' | 'CHAPTER_MENU' | 'FINALE';
   finaleChapter: number; // which chapter's final scene is on screen
-  cardOut: number; // chapter card: seconds since it started fading away (0 = still showing)
+  justPressed: Set<string>; // key codes pressed this frame (menus want taps, not held keys)
+  menuIndex: number; // chapter menu: the focused chapter
+  menuChosen: boolean; // chapter menu: Space was pressed — the card lifts, then the chapter opens
+  menuT: number; // chapter menu: seconds since the focus last moved (for the little bounce)
+  menuWait: number; // chapter menu: seconds since the choice (narration cap)
+  chapterDone: boolean[]; // chapters whose final scene has been reached this session
+  menuFocusOnFade: number; // which chapter the menu focuses when a fade-out leads to it
+  pausePrevState: GameState; // where to return after the pause menu
+  pauseIndex: number; // pause menu: focused button
+  pauseT: number;
   levelIndex: number;
   colorsRestored: number;
   totalStars: number;
@@ -142,7 +151,16 @@ export function createGameCtx(canvas: HTMLCanvasElement): GameCtx {
     butterfly: null,
     finaleT: 0,
     finaleChapter: 0,
-    cardOut: 0,
+    justPressed: new Set<string>(),
+    menuIndex: 0,
+    menuChosen: false,
+    menuT: 0,
+    menuWait: 0,
+    chapterDone: [],
+    menuFocusOnFade: 0,
+    pausePrevState: 'PLAYING',
+    pauseIndex: 0,
+    pauseT: 0,
     wings: null,
     player: {
       x: 0, y: 0, vx: 0, vy: 0,

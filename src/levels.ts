@@ -136,10 +136,10 @@ const ALL_LEVELS: LevelDef[] = [
       '..............c..................c......',
       '........................................',
       '........................................',
-      '...............*........................',
+      '...............F........................',
       '..............===..............*........',
       '..............................===.......',
-      '..................F.....................',
+      '..................*.....................',
       '..P.........T....===.............f..I...',
       '########...#############...#############',
       '########...#############...#############',
@@ -447,6 +447,10 @@ export const isChapterEnd = (levelIndex: number): boolean =>
 // First level of its chapter → a chapter card is shown before it.
 export const isChapterStart = (levelIndex: number): boolean =>
   levelIndex === 0 || chapterIndexOfLevel(levelIndex - 1) !== chapterIndexOfLevel(levelIndex);
+
+// Index of a chapter's first level in the flat play order.
+export const chapterStartLevel = (chapter: number): number =>
+  CHAPTERS.slice(0, chapter).reduce((n, c) => n + c.levels.length, 0);
 
 // How many rainbow stripes are already earned when a level begins.
 export const stripesBeforeLevel = (levelIndex: number): number =>

@@ -5,16 +5,23 @@ import { voice } from '../voice';
 import { SPEAKER } from './constants';
 import type { GameCtx } from './context';
 import { jumpToLevel } from './jumpToLevel';
+import { clickChapterMenu } from './clickChapterMenu';
+import { menuHit } from './chapterMenuLayout';
+import { clickPause } from './clickPause';
+import { pauseHit } from './pauseMenuLayout';
 
 export function setupInput(gc: GameCtx): void {
   window.addEventListener('keydown', (e: KeyboardEvent) => {
-    if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Space'].includes(e.code)) {
+    if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Space', 'Escape'].includes(e.code)) {
       e.preventDefault();
     }
     audio.unlock();
     if (e.repeat) return;
     gc.keys[e.code] = true;
-    if (e.code === 'Space' || e.code === 'ArrowUp') gc.jumpBuf = C.JUMP_BUFFER;
+    gc.justPressed.add(e.code);
+    // menus use Space/↑ too — those presses must not become a jump later
+    const inMenu = gc.state === 'PAUSED' || gc.state === 'CHAPTER_MENU';
+    if ((e.code === 'Space' || e.code === 'ArrowUp') && !inMenu) gc.jumpBuf = C.JUMP_BUFFER;
     if (e.code === 'KeyM') voice.setVoiceMuted(audio.toggleMute());
     if (e.code === 'KeyV') voice.toggleVoice(); // narrator on/off, music untouched
     // secret grown-up shortcut: hold Shift + L, then press the level key.
@@ -50,6 +57,19 @@ export function setupInput(gc: GameCtx): void {
     const my = (e.clientY - r.top) / gc.cssScale;
     if (mx >= SPEAKER.x && mx <= SPEAKER.x + SPEAKER.w && my >= SPEAKER.y && my <= SPEAKER.y + SPEAKER.h) {
       voice.setVoiceMuted(audio.toggleMute());
+      return;
     }
+    clickChapterMenu(gc, mx, my); // chapter cards, the play pill and the side arrows are clickable
+    clickPause(gc, mx, my);
+  });
+  // a pointer cursor over the clickable parts of the chapter menu
+  gc.canvas.addEventListener('pointermove', (e: PointerEvent) => {
+    const r = gc.canvas.getBoundingClientRect();
+    const mx = (e.clientX - r.left) / gc.cssScale;
+    const my = (e.clientY - r.top) / gc.cssScale;
+    const overSpeaker = mx >= SPEAKER.x && mx <= SPEAKER.x + SPEAKER.w && my >= SPEAKER.y && my <= SPEAKER.y + SPEAKER.h;
+    const overMenu = gc.state === 'CHAPTER_MENU' && !gc.menuChosen && menuHit(mx, my) !== null;
+    const overPause = gc.state === 'PAUSED' && pauseHit(mx, my) !== null;
+    gc.canvas.style.cursor = overSpeaker || overMenu || overPause ? 'pointer' : 'default';
   });
 }

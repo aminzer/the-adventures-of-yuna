@@ -6,7 +6,9 @@ import { updateBlooming } from './updateBlooming';
 import { updateLevelDone } from './updateLevelDone';
 import { updateFadeOut } from './updateFadeOut';
 import { updateFadeIn } from './updateFadeIn';
-import { updateChapterCard } from './updateChapterCard';
+import { updateChapterMenu } from './updateChapterMenu';
+import { updatePause } from './updatePause';
+import { enterPause } from './enterPause';
 import { updateFinale } from './updateFinale';
 import { updateFriendHops } from './updateFriendHops';
 import { playerCX } from './utils';
@@ -16,6 +18,19 @@ export function update(gc: GameCtx, dt: number): void {
   gc.globalT += dt;
   gc.anyKeyFrame = gc.anyKeyPressed;
   gc.anyKeyPressed = false;
+  const justPressed = gc.justPressed;
+  gc.justPressed = new Set<string>(); // consumed by this frame's update only
+
+  // Esc pauses anywhere in the game itself (not in the menus or mid-fade);
+  // while paused the world is frozen — only the pause menu runs
+  if (gc.state === 'PAUSED') {
+    updatePause(gc, dt, justPressed);
+    return;
+  }
+  if (justPressed.has('Escape') && !['CHAPTER_MENU', 'FADE_IN', 'FADE_OUT'].includes(gc.state)) {
+    enterPause(gc);
+    return;
+  }
 
   // Yuna blink timer
   player.blinkT -= dt;
@@ -42,7 +57,7 @@ export function update(gc: GameCtx, dt: number): void {
     case 'LEVEL_DONE': updateLevelDone(gc, dt); break;
     case 'FADE_OUT': updateFadeOut(gc, dt); break;
     case 'FADE_IN': updateFadeIn(gc, dt); break;
-    case 'CHAPTER_CARD': updateChapterCard(gc, dt); break;
+    case 'CHAPTER_MENU': updateChapterMenu(gc, dt, justPressed); break;
     case 'FINALE': updateFinale(gc, dt); break;
   }
   updateFriendHops(gc, dt);
