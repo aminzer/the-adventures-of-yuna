@@ -35,6 +35,7 @@ export { drawSun } from './world/drawSun';
 export { drawFirefly } from './world/drawFirefly';
 export { drawBush } from './world/drawBush';
 export { drawLeafPile } from './world/drawLeafPile';
+export { drawNest } from './world/drawNest';
 export { drawMoon } from './world/drawMoon';
 export { drawHills } from './world/drawHills';
 export { drawRainbow } from './world/drawRainbow';

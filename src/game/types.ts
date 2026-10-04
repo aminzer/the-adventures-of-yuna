@@ -78,7 +78,7 @@ export interface Star {
 }
 
 export interface Decor {
-  kind: 'T' | 'f' | 'c' | 'b' | 's';
+  kind: 'T' | 'f' | 'c' | 'b' | 's' | 'n'; // n = nest with chicks under the mother bird
   x: number;
   y: number;
 }

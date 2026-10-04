@@ -67,6 +67,8 @@ export function loadLevel(gc: GameCtx, i: number): void {
         player.safeX = player.x;
         player.safeY = player.y;
       } else if (ch === 'F') {
+        // the mother bird sits on her nest — the chicks are why she can't leave
+        if (L.friend === 'bird') gc.decor.push({ kind: 'n', x: cx, y: cellBottom });
         gc.friends.push({ kind: L.friend, x: cx, y: cellBottom, satisfied: false, asked: false, hop: 0, hopV: 0, bounce: 0, dwellT: 0, t: Math.random() * 9 });
       } else if (ch === 'I' && L.item) {
         gc.items.push({ kind: L.item, x: cx, y: cellBottom - 20, homeY: cellBottom - 20, state: 'world', t: Math.random() * 9 });

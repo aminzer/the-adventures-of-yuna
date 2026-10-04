@@ -41,6 +41,9 @@ export function renderWorld(gc: GameCtx): void {
     } else if (d.kind === 's') {
       og.translate(d.x, d.y);
       art.drawSeaweed(og, gc.globalT + d.x);
+    } else if (d.kind === 'n') {
+      og.translate(d.x, d.y);
+      art.drawNest(og, gc.globalT);
     } else {
       og.translate(d.x, d.y);
       art.drawFlowerPatch(og, gc.globalT);
@@ -68,7 +71,9 @@ export function renderWorld(gc: GameCtx): void {
   // the friends (part of the grey world until color returns)
   for (const f of gc.friends) {
     og.save();
-    og.translate(f.x, f.y);
+    // a mother bird sits up on the rim of her nest, clearly above the chicks
+    const nestLift = gc.decor.some((d) => d.kind === 'n' && d.x === f.x && d.y === f.y) ? 18 : 0;
+    og.translate(f.x, f.y - nestLift);
     const squash = 1 + f.bounce * 0.12 * Math.sin(f.bounce * 12);
     og.scale(2 - squash, squash);
     // the puppy always turns toward Yuna — waiting for her or chasing her
