@@ -1,6 +1,7 @@
 import { C } from '../config';
-import { TEXTS } from '../texts';
+import { ASK_HELP, TEXTS } from '../texts';
 import { audio } from '../audio';
+import { voice } from '../voice';
 import type { GameCtx } from './context';
 import { beginGiving } from './beginGiving';
 import { showCaption } from './showCaption';
@@ -16,6 +17,26 @@ export function updateGather(gc: GameCtx, dt: number): void {
   const px = playerCX(gc.player);
   const py = playerCY(gc.player);
 
+  // the first meeting: the lonely owl asks Yuna to bring her friends back
+  if (!owl.asked && dist(px, py, owl.x, owl.y - 24) < C.ASK_RADIUS) {
+    owl.asked = true;
+    owl.bounce = 1;
+    audio.play('hint');
+    const plea = ASK_HELP[owl.kind];
+    if (plea) showCaption(gc, plea, 9);
+  }
+
+  // the owl has finished asking — the fireflies light up all along the road
+  if (!gc.pleaDone) return;
+  if (!gc.firefliesOut) {
+    gc.firefliesOut = true;
+    for (const fl of gc.fireflies) {
+      for (let i = 0; i < 8; i++) {
+        gc.particles.push({ kind: 'sparkle', x: fl.x, y: fl.y, vx: (Math.random() - 0.5) * 90, vy: (Math.random() - 0.5) * 90, life: 0.8, t: 0 });
+      }
+    }
+  }
+
   for (const fl of gc.fireflies) {
     fl.t += dt;
     if (fl.state === 'waiting') {
@@ -25,7 +46,8 @@ export function updateGather(gc: GameCtx, dt: number): void {
         fl.order = gc.fireflies.filter((o) => o.state !== 'waiting').length;
         fl.state = 'following';
         audio.play('shimmer');
-        if (fl.order === 0) showCaption(gc, TEXTS.fireflyFollow, 4.5);
+        // (unless the owl is still speaking — never cut her plea short)
+        if (fl.order === 0 && !voice.isSpeaking()) showCaption(gc, TEXTS.fireflyFollow, 4.5);
         for (let i = 0; i < 6; i++) {
           gc.particles.push({ kind: 'sparkle', x: fl.x, y: fl.y, vx: (Math.random() - 0.5) * 70, vy: -Math.random() * 50, life: 0.6, t: 0 });
         }

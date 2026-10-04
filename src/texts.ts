@@ -74,6 +74,7 @@ export const ASK_HELP: Partial<Record<FriendKind, string>> = {
   squirrel: 'Юна, помоги! Мы с братиком потеряли наши жёлуди…',
   babystar: 'Юна, помоги! Я потеряла свой огонёк…',
   octopus: 'Юна, помоги! Моя жемчужина укатилась далеко на дно…',
+  owl: 'Юна, помоги! Буря разогнала моих светлячков — без них так темно и одиноко. Собери их, пожалуйста!',
 };
 
 // What to say the moment a friend becomes happy.
@@ -81,7 +82,7 @@ export function satisfiedText(level: LevelDef, friend: FriendKind): string {
   if (friend === 'mama') return 'Мама так рада! Теперь Юна готова к приключениям.';
   if (level.deed === 'fetch' && level.item) return TEXTS.given(level.item, friend);
   switch (friend) {
-    case 'owl': return 'Светлячки светят совушке! Она проснулась — как уютно!';
+    case 'owl': return 'Светлячки снова с совушкой! Как светло и уютно стало!';
     case 'fox': return 'Как весело было играть! Теперь Юна и лисёнок — лучшие друзья. ❤';
     case 'lark': return 'Песенка вернулась! Жаворонок поёт!';
     case 'puppy': return 'Юна догнала щенка! Ура, как весело было играть!';

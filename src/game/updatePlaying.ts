@@ -2,6 +2,7 @@ import { C } from '../config';
 import { LEVELS } from '../levels';
 import { audio } from '../audio';
 import { ASK_HELP, TEXTS } from '../texts';
+import { voice } from '../voice';
 import { BUBBLE_H } from './constants';
 import type { GameCtx } from './context';
 import { moveX } from './moveX';
@@ -175,8 +176,12 @@ export function updatePlaying(gc: GameCtx, dt: number): void {
 
   if (gc.piles.length > 0) updatePiles(gc, dt);
 
+  // the wished-for things appear only once the friend has finished asking —
+  // so a quick child can never cut the plea short by finding them early
+  if (!gc.pleaDone && gc.friends.some((f) => f.asked) && !voice.isSpeaking()) gc.pleaDone = true;
+
   // auto pickup — a wished-for item exists only once its friend has asked
-  if (!player.carrying && (level.deed !== 'fetch' || gc.friends.some((f) => f.asked))) {
+  if (!player.carrying && (level.deed !== 'fetch' || gc.pleaDone)) {
     for (const it of gc.items) {
       if (it.state === 'world' && dist(playerCX(player), playerCY(player), it.x, it.y) < C.PICKUP_RADIUS) {
         it.state = 'carried';

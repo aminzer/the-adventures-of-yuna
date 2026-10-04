@@ -14,7 +14,7 @@ export function renderWorld(gc: GameCtx): void {
   const ctx = gc.ctx;
   const level = LEVELS[gc.levelIndex];
   // on fetch levels the wished-for item exists only after the friend has asked
-  const itemsRevealed = level.deed !== 'fetch' || gc.friends.some((f) => f.asked);
+  const itemsRevealed = level.deed !== 'fetch' || gc.pleaDone;
   const T = C.TILE;
   const player = gc.player;
   renderSkyAndHills(gc);
@@ -274,6 +274,7 @@ export function renderWorld(gc: GameCtx): void {
 
   // the owl's fireflies — tiny always-colored lanterns, even in the grey world
   for (const fl of gc.fireflies) {
+    if (!gc.pleaDone) break; // they light up once the owl has finished asking
     ctx.save();
     ctx.translate(fl.x, fl.y);
     art.drawFirefly(ctx, fl.t);
@@ -295,7 +296,7 @@ export function renderWorld(gc: GameCtx): void {
   for (const f of gc.friends) {
     const isGiving = gc.state === 'GIVING' && gc.givingFriend === f;
     if (f.satisfied && !isGiving) continue;
-    if (level.deed === 'fetch' && !f.asked) continue; // the wish appears once the friend has asked
+    if ((level.deed === 'fetch' || level.deed === 'gather') && !f.asked) continue; // the wish appears once the friend has asked
     if (level.deed === 'play' && f.asked && !isGiving) continue; // no bubble over a hiding fox — the ears are the hint
     const heartAmt = isGiving ? Math.min(1, gc.stateT / C.GIVE_TIME) : 0;
     const dwellPulse = level.deed === 'dwell' ? Math.min(0.18, f.dwellT * 0.15) : 0;

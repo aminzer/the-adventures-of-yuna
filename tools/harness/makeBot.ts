@@ -170,7 +170,9 @@ export function makeBot(debug: GameDebug, listeners: Record<string, Listener[]>)
       // the friend is waiting right below us (we're camped on a platform
       // above it) — walk to the NEAREST edge of this platform and step off,
       // holding the direction so we don't oscillate back over the friend
-      if (!item && friend && player.onGround && friend.y > player.y + player.h + 40 && Math.abs(tx - cx) < 60) {
+      // (once we've started walking to the edge we keep going until we're off —
+      // on a wide platform the friend drifts out of the narrow window below)
+      if (!item && friend && player.onGround && friend.y > player.y + player.h + 40 && (Math.abs(tx - cx) < 60 || simT < dropUntil)) {
         if (simT >= dropUntil) {
           const feetY = player.y + player.h + 6;
           let left = 9;

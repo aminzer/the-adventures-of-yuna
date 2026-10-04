@@ -26,9 +26,10 @@ chapters can be added by extending `CHAPTERS`.
   pickup/give/wake/hug happen automatically on proximity.
 - **Fetch levels tell a story in order**: Yuna first MEETS the friend (placed
   between the start and the item on every map), the friend voices a plea
-  (`ASK_HELP` in texts.ts, triggered at `ASK_RADIUS`); only then the item
-  appears in the world (hidden and unpickable before), and Yuna brings it
-  back. The friend's thought bubble also appears only after the plea.
+  (`ASK_HELP` in texts.ts, triggered at `ASK_RADIUS`); only once the plea has
+  been spoken to the END (`gc.pleaDone`) does the item appear in the world
+  (hidden and unpickable before), and Yuna brings it back. Same for the
+  owl's fireflies. The friend's thought bubble also appears only after the plea.
 - **Pictures carry the gameplay, text is narration on top.** Thought bubbles
   show what a friend needs. Russian subtitles + voice-over tell the story; a
   child who cannot read must still be able to play.
@@ -46,8 +47,9 @@ chapters can be added by extending `CHAPTERS`.
   a child — gets stuck above it). `check:levels` enforces the map rules — keep
   it green, extend it when adding rules.
 - **Rainbow chapter ramps simple → intricate**: red is short and flat; then
-  fetch levels grow; blue = two friends; indigo = `gather` deed (fireflies
-  join Yuna and follow her to the sleeping owl); violet = `play` deed
+  fetch levels grow; blue = two friends; indigo = `gather` deed (the SAD —
+  not sleeping — owl at the start asks; fireflies join Yuna and follow her
+  back to the owl); violet = `play` deed
   (hide-and-seek: the fox peeks from bushes, three finds, then runs in for
   the hug). No plain "stand next to the friend" (dwell) levels remain.
 - **Rainbow stripes come only from chapter 1** (`ChapterDef.earnsStripe`) —

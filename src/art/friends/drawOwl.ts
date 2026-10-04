@@ -1,7 +1,7 @@
 import type { Ctx, FriendPose } from '../types';
 import { circle, ellipse, rr } from '../shapes';
 
-// A round owl dozing on a tree stump. Sad = asleep, happy = wide awake.
+// A round owl on a tree stump. Sad = awake but downcast, happy = wide awake and bright.
 export function drawOwl(g: Ctx, o: FriendPose): void {
   g.save();
   const t = o.t;
@@ -19,7 +19,7 @@ export function drawOwl(g: Ctx, o: FriendPose): void {
   g.stroke();
 
   g.translate(0, -o.hop);
-  // gentle breathing while asleep
+  // a slow, sighing breath while sad
   const breath = o.happy ? 0 : Math.sin(t * 1.6) * 1.2;
   g.translate(0, breath);
 
@@ -45,7 +45,7 @@ export function drawOwl(g: Ctx, o: FriendPose): void {
     }
   }
 
-  // wings — folded asleep, lifted in joy when awake
+  // wings — folded while sad, lifted in joy when happy
   for (const s of [-1, 1]) {
     g.save();
     g.translate(s * 11, -48);
@@ -85,15 +85,27 @@ export function drawOwl(g: Ctx, o: FriendPose): void {
     circle(g, 6, -53, 1.1);
     g.fill();
   } else {
-    // fast asleep: ∩ closed lids
+    // awake but sad: small pupils looking down, heavy upper lids, worried brows
+    g.fillStyle = '#3a3040';
+    circle(g, -5, -50.5, 2.4);
+    g.fill();
+    circle(g, 5, -50.5, 2.4);
+    g.fill();
+    g.fillStyle = '#f5f0e0';
+    g.beginPath();
+    g.arc(-5, -53.5, 4.2, 0, Math.PI);
+    g.fill();
+    g.beginPath();
+    g.arc(5, -53.5, 4.2, 0, Math.PI);
+    g.fill();
     g.strokeStyle = '#3a3040';
-    g.lineWidth = 1.6;
+    g.lineWidth = 1.4;
     g.lineCap = 'round';
     g.beginPath();
-    g.arc(-5, -51, 2.6, Math.PI * 1.15, Math.PI * 1.85);
-    g.stroke();
-    g.beginPath();
-    g.arc(5, -51, 2.6, Math.PI * 1.15, Math.PI * 1.85);
+    g.moveTo(-8, -58);
+    g.lineTo(-2.5, -56);
+    g.moveTo(8, -58);
+    g.lineTo(2.5, -56);
     g.stroke();
   }
 

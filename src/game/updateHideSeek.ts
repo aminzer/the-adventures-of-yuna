@@ -33,6 +33,19 @@ export function updateHideSeek(gc: GameCtx, dt: number): void {
     return;
   }
 
+  // after the last find the fox runs to Yuna for the hug — and the hug
+  // happens the moment they meet, even mid-dash (otherwise the two could
+  // keep running past each other forever); generous vertically, in case
+  // Yuna watches from a platform just above
+  const allFound = gc.hideFound >= C.HIDE_ROUNDS;
+  const hugClose = Math.abs(px - fox.x) < 56 && Math.abs(py - (fox.y - 24)) < 110;
+  if (allFound && hugClose) {
+    gc.hideRun = null;
+    fox.hop = 0;
+    beginGiving(gc, fox);
+    return;
+  }
+
   // mid-dash: playful bounding leaps (they carry it safely over any gap)
   if (gc.hideRun) {
     const r = gc.hideRun;
@@ -47,10 +60,9 @@ export function updateHideSeek(gc: GameCtx, dt: number): void {
     return;
   }
 
-  // every hiding place visited — the fox runs to Yuna itself, for the hug
-  if (gc.hideFound >= C.HIDE_ROUNDS) {
-    if (dist(px, py, fox.x, fox.y - 24) < 56) beginGiving(gc, fox);
-    else startRun(gc, px);
+  // every hiding place visited and Yuna still away — run to where she is now
+  if (allFound) {
+    startRun(gc, px);
     return;
   }
 

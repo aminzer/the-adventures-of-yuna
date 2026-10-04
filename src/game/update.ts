@@ -62,12 +62,6 @@ export function update(gc: GameCtx, dt: number): void {
   }
   updateFriendHops(gc, dt);
 
-  // a sleeping owl breathes out little Zzz marks
-  for (const f of gc.friends) {
-    if (f.kind === 'owl' && !f.satisfied && Math.random() < dt * 0.8) {
-      gc.particles.push({ kind: 'zzz', x: f.x + 14, y: f.y - 78, vx: 8, vy: -16, life: 2, t: 0 });
-    }
-  }
 
   // camera follows gently
   if (gc.state !== 'FINALE') {
