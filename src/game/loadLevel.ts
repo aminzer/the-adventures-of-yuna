@@ -29,8 +29,10 @@ export function loadLevel(gc: GameCtx, i: number): void {
   gc.bells = [];
   gc.fireflies = [];
   gc.bushes = [];
+  gc.piles = [];
   gc.hideFound = 0;
   gc.hideRun = null;
+  gc.chasePhase = 'pup';
   gc.songPos = 0;
   gc.songDemo = { delay: 2.2, step: -1 };
   gc.airWarned = false;
@@ -68,6 +70,12 @@ export function loadLevel(gc: GameCtx, i: number): void {
         gc.friends.push({ kind: L.friend, x: cx, y: cellBottom, satisfied: false, asked: false, hop: 0, hopV: 0, bounce: 0, dwellT: 0, t: Math.random() * 9 });
       } else if (ch === 'I' && L.item) {
         gc.items.push({ kind: L.item, x: cx, y: cellBottom - 20, homeY: cellBottom - 20, state: 'world', t: Math.random() * 9 });
+      } else if (ch === 'L' && L.item) {
+        // the item hides under a pile of leaves, its top just peeking out
+        gc.items.push({ kind: L.item, x: cx, y: cellBottom - 22, homeY: cellBottom - 22, state: 'world', t: Math.random() * 9, underPile: true });
+        gc.piles.push({ x: cx, y: cellBottom, shake: 0, cool: 0 });
+      } else if (ch === 'l') {
+        gc.piles.push({ x: cx, y: cellBottom, shake: 0, cool: 0 }); // just leaves — a decoy to rummage in
       } else if (ch === '*') {
         gc.stars.push({ x: cx, y: r * T + T / 2, collected: false, t: Math.random() * 9 });
       } else if (ch === 'W') {

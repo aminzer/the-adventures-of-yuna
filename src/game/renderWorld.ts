@@ -12,6 +12,9 @@ import { playerCX } from './utils';
 
 export function renderWorld(gc: GameCtx): void {
   const ctx = gc.ctx;
+  const level = LEVELS[gc.levelIndex];
+  // on fetch levels the wished-for item exists only after the friend has asked
+  const itemsRevealed = level.deed !== 'fetch' || gc.friends.some((f) => f.asked);
   const T = C.TILE;
   const player = gc.player;
   renderSkyAndHills(gc);
@@ -83,6 +86,23 @@ export function renderWorld(gc: GameCtx): void {
     }
   }
 
+  // items tucked under leaf piles live in the world layer (muted like the
+  // leaves) so the pile drawn after them really covers them — all but the top
+  for (const it of gc.items) {
+    if (it.underPile && it.state === 'world' && itemsRevealed) {
+      og.save();
+      og.translate(it.x, it.y);
+      art.drawItem(og, it.kind, 1);
+      og.restore();
+    }
+  }
+  for (const pile of gc.piles) {
+    og.save();
+    og.translate(pile.x, pile.y);
+    art.drawLeafPile(og, gc.globalT + pile.x, pile.shake);
+    og.restore();
+  }
+
   // hide-and-seek bushes — drawn after the fox so they cover its body and
   // leave just the ears and tail peeking over the top
   for (const b of gc.bushes) {
@@ -93,7 +113,6 @@ export function renderWorld(gc: GameCtx): void {
   }
 
   // the sea, over everything in it (its blue also returns with the bloom)
-  const level = LEVELS[gc.levelIndex];
   if (level.water !== undefined) {
     art.drawWater(og, level.water * T, gc.levelW, gc.levelH, gc.globalT);
   }
@@ -179,11 +198,9 @@ export function renderWorld(gc: GameCtx): void {
     ctx.restore();
   }
 
-  // items waiting in the world — drawn in color so they are easy to spot.
-  // On fetch levels they appear only after the friend has asked for help.
-  const itemsRevealed = level.deed !== 'fetch' || gc.friends.some((f) => f.asked);
+  // items waiting in the world — drawn in color so they are easy to spot
   for (const it of gc.items) {
-    if (it.state === 'world' && itemsRevealed) {
+    if (it.state === 'world' && itemsRevealed && !it.underPile) {
       ctx.save();
       ctx.fillStyle = 'rgba(0,0,0,0.1)';
       art.ellipse(ctx, it.x, it.homeY + 18, 12, 3.5);

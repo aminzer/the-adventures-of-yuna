@@ -12,6 +12,13 @@ export interface Firefly {
   t: number;
 }
 
+export interface Pile {
+  x: number;
+  y: number; // ground line
+  shake: number; // 0..1, rustle animation after Yuna brushes it
+  cool: number; // seconds until it may rustle again
+}
+
 export interface Bush {
   x: number;
   y: number; // ground line the bush sits on
@@ -52,6 +59,7 @@ export interface Caption {
 
 export interface Item {
   kind: ItemKind;
+  underPile?: boolean; // hidden under a leaf pile — drawn muted, mostly covered
   x: number;
   y: number;
   homeY: number;
@@ -82,7 +90,7 @@ export interface Wings {
 }
 
 export interface Particle {
-  kind: 'heart' | 'sparkle' | 'zzz' | 'bubble' | 'noteP';
+  kind: 'heart' | 'sparkle' | 'zzz' | 'bubble' | 'noteP' | 'leaf';
   x: number;
   y: number;
   vx: number;

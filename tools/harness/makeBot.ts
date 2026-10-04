@@ -200,6 +200,8 @@ export function makeBot(debug: GameDebug, listeners: Record<string, Listener[]>)
         // bottomless gap. (Stepping down from a platform onto lower ground
         // is safe to just walk off — don't panic-jump off platform edges.)
         mustJump = ![0, 48, 96, 144].some((dy) => debug.solidAt(aheadX, feetY + dy));
+        // a step up right ahead (uphill ground) — hop onto it
+        if (debug.solidAt(aheadX, player.y + player.h - 10)) mustJump = true;
       }
 
       // otherwise hop occasionally, from the ground, at a randomized cadence

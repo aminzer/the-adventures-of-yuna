@@ -20,7 +20,8 @@ chapters can be added by extending `CHAPTERS`.
 - **Zero pressure.** No enemies, no dying, no timers, no fail states, no score
   penalties. Falling = friendly cloud rescue back to safe ground. Idling forever
   is always safe; the world waits. When an idea implies fear or failure, invert
-  it (the "wolf" became a puppy playing tag — being caught IS the happy win).
+  it (the "wolf" became a puppy playing tag: round one the pup is "it" and
+  catching Yuna is a happy swap, round two Yuna is "it" and tags the pup).
 - **Keyboard only, two concepts:** ←/→ walk, Space/↑ jump. No interaction key —
   pickup/give/wake/hug happen automatically on proximity.
 - **Fetch levels tell a story in order**: Yuna first MEETS the friend (placed

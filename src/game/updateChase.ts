@@ -7,11 +7,11 @@ import { showCaption } from './showCaption';
 import { solid } from './solid';
 import { dist, playerCX, playerCY } from './utils';
 
-// Chase levels: the puppy is "it" — it bounds happily after Yuna, jumping
-// up the platforms right behind her. She is a little faster, so she can keep
-// the game going as long as she likes (or hop right over it to turn around);
-// the moment she rests, she is caught — and being caught IS the joyful
-// ending. Nothing bad can ever happen.
+// Chase levels — two rounds of tag. Round one: the puppy is "it" and bounds
+// happily after Yuna, jumping up the platforms right behind her; the moment
+// she rests, she is caught. Round two: now Yuna is "it" — the pup scampers
+// away (a little slower than her, and it keeps stopping to sniff), and when
+// she tags it the game ends in a hug. Nothing bad can ever happen.
 export function updateChase(gc: GameCtx, dt: number): void {
   const pup = gc.friends[0];
   if (!pup || pup.satisfied) return;
@@ -66,7 +66,9 @@ export function updateChase(gc: GameCtx, dt: number): void {
       pup.vx = (pup.vx ?? 0) * (1 - Math.min(1, 6 * dt)); // skid to a sniff
       if (grounded) pup.hop = Math.abs(Math.sin(gc.globalT * 2.5)) * 3; // sniff-sniff
     } else {
-      const aim = lx + (pup.aimOffset ?? 0);
+      // round one: run NEAR Yuna; round two: run AWAY from her (the walls
+      // of the meadow will corner it in the end)
+      const aim = gc.chasePhase === 'pup' ? lx + (pup.aimOffset ?? 0) : pup.x - Math.sign(dx || 1) * 400 + (pup.aimOffset ?? 0) * 0.3;
       const want = Math.abs(aim - pup.x) < 12 ? 0 : Math.sign(aim - pup.x) * C.PUP_SPEED;
       const dv = want - (pup.vx ?? 0);
       pup.vx = (pup.vx ?? 0) + Math.sign(dv) * Math.min(Math.abs(dv), C.PUP_ACCEL * dt);
@@ -96,7 +98,7 @@ export function updateChase(gc: GameCtx, dt: number): void {
           break;
         }
       }
-      if (playerFeet < pup.y - 40 && Math.abs(dx) < 180 && airClear && (pup.upFor ?? 0) > C.PUP_CLIMB_TIME) {
+      if (gc.chasePhase === 'pup' && playerFeet < pup.y - 40 && Math.abs(dx) < 180 && airClear && (pup.upFor ?? 0) > C.PUP_CLIMB_TIME) {
         pup.vy = -C.PUP_JUMP; // finally worked it out — up it goes!
       } else if (Math.abs(pup.vx ?? 0) > 40 && airClear) {
         pup.vy = -C.PUP_BOUNCE; // the happy bounding gait
@@ -107,8 +109,18 @@ export function updateChase(gc: GameCtx, dt: number): void {
     pup.hop = Math.abs(Math.sin(gc.globalT * 4)) * 5; // eager play-bow bouncing
   }
 
-  // caught! (small radius, so hopping over the pup is a real escape)
-  if (dist(lx, playerCY(player), pup.x, pup.y - 24) < C.CATCH_RADIUS) {
-    beginGiving(gc, pup);
+  // tag! (small radius, so hopping over the pup is a real escape)
+  if (pup.fleeing && dist(lx, playerCY(player), pup.x, pup.y - 24) < C.CATCH_RADIUS) {
+    if (gc.chasePhase === 'pup') {
+      // round one over — now Yuna is "it"; the pup takes a breath, then scampers off
+      gc.chasePhase = 'yuna';
+      pup.pauseFor = 1.2;
+      pup.vx = 0;
+      pup.bounce = 1;
+      audio.play('bark');
+      showCaption(gc, TEXTS.chaseSwap, 4);
+    } else if ((pup.pauseFor ?? 0) <= 0.9) {
+      beginGiving(gc, pup); // (not during the breath right after the swap)
+    }
   }
 }

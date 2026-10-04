@@ -11,6 +11,16 @@ export function renderParticles(gc: GameCtx): void {
     if (p.kind === 'heart') {
       const s = 7 + Math.sin(p.t * 8) * 1;
       art.drawHeart(ctx, s, '#f0637f');
+    } else if (p.kind === 'leaf') {
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.t * 6);
+      ctx.globalAlpha = Math.max(0, 1 - p.t / p.life);
+      ctx.fillStyle = p.vx > 0 ? '#e0a23c' : '#c75d2a';
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 7, 4, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
     } else if (p.kind === 'zzz') {
       ctx.strokeStyle = '#b8b2d8';
       art.drawZzz(ctx, 5 + p.t * 3);

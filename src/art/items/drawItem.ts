@@ -10,6 +10,7 @@ import { drawGlow } from './drawGlow';
 import { drawNote } from './drawNote';
 import { drawPearl } from './drawPearl';
 import { drawBall } from './drawBall';
+import { drawDandelion } from './drawDandelion';
 
 // Drawn centered on origin, roughly 26 px tall.
 export function drawItem(g: Ctx, kind: BubbleIcon, s = 1): void {
@@ -24,6 +25,7 @@ export function drawItem(g: Ctx, kind: BubbleIcon, s = 1): void {
   else if (kind === 'note') drawNote(g);
   else if (kind === 'pearl') drawPearl(g);
   else if (kind === 'ball') drawBall(g);
+  else if (kind === 'dandelion') drawDandelion(g);
   else if (kind === 'firefly') {
     // tiny glowing firefly for the owl's wish bubble
     g.fillStyle = 'rgba(255, 226, 130, 0.45)';

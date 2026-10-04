@@ -14,6 +14,7 @@ import { updateCarried } from './updateCarried';
 import { updateSong } from './updateSong';
 import { updateGather } from './updateGather';
 import { updateHideSeek } from './updateHideSeek';
+import { updatePiles } from './updatePiles';
 import { updateChase } from './updateChase';
 import { updateIntro } from './updateIntro';
 import { beginGiving } from './beginGiving';
@@ -171,6 +172,8 @@ export function updatePlaying(gc: GameCtx, dt: number): void {
       });
     }
   }
+
+  if (gc.piles.length > 0) updatePiles(gc, dt);
 
   // auto pickup — a wished-for item exists only once its friend has asked
   if (!player.carrying && (level.deed !== 'fetch' || gc.friends.some((f) => f.asked))) {

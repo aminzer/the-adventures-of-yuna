@@ -16,6 +16,7 @@ for (const L of LEVELS) {
   map.forEach((row, r) => {
     if (row.length !== cols) fail(`${L.name} row ${r}: length ${row.length} != ${cols}`);
     for (const ch of row) if (ch in counts) counts[ch as keyof typeof counts]++;
+    for (const ch of row) if (ch === 'L') counts.I++; // an item hidden under leaves is still an item
   });
   if (counts.P !== 1) fail(`${L.name}: expected 1 P, got ${counts.P}`);
   if (counts.F < 1) fail(`${L.name}: expected at least 1 F, got ${counts.F}`);
@@ -89,7 +90,9 @@ for (const L of LEVELS) {
   }
 
   // no low platform (< 4 tiles clearance) may overhang a gap's jump runway
-  // (the 2 columns either side of a gap plus the gap itself) — head-bonk trap
+  // (the 2 columns either side of a gap plus the gap itself) — head-bonk trap.
+  // Only cells with air beneath them count: raised ground beside a gap on a
+  // hill is a floor, not something to bump your head on.
   gap = 0;
   for (let c = 0; c <= cols; c++) {
     const open = c < cols && !solid(c, groundRow);
@@ -98,7 +101,7 @@ for (const L of LEVELS) {
       if (gap > 0) {
         for (let cc = c - gap - 2; cc <= c + 1; cc++) {
           for (let r = groundRow - 4; r < groundRow; r++) {
-            if (r >= 0 && solid(cc, r)) {
+            if (r >= 0 && solid(cc, r) && !solid(cc, r + 1)) {
               fail(`${L.name}: platform at col ${cc}, row ${r} overhangs the gap runway ending at col ${c}`);
             }
           }
