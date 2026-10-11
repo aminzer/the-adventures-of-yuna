@@ -24,11 +24,11 @@ function levelLines(L: LevelDef): string[] {
   if (L.practice) out.push(TEXTS.introJump, TEXTS.introGo);
   if (L.sky) out.push(TEXTS.wings, TEXTS.wingsTired, TEXTS.wingsReady);
   if (L.water) out.push(TEXTS.airLow, TEXTS.bubbleLift);
-  if (L.deed === 'song') out.push(TEXTS.listen, TEXTS.yourTurn, TEXTS.wrongNote);
+  if (L.deed === 'song') out.push(TEXTS.yourTurn, TEXTS.wrongNote, TEXTS.duetDone);
   if (L.deed === 'chase') out.push(TEXTS.chaseOn, TEXTS.chaseSwap);
   if (L.deed === 'gather') out.push(TEXTS.fireflyFollow, TEXTS.fireflyHome);
   if (L.deed === 'play') out.push(TEXTS.hidePlea, TEXTS.hideFound, TEXTS.hideLast);
-  if ((L.deed === 'fetch' || L.deed === 'gather') && ASK_HELP[L.friend]) out.push(ASK_HELP[L.friend]!);
+  if ((L.deed === 'fetch' || L.deed === 'gather' || L.deed === 'song') && ASK_HELP[L.friend]) out.push(ASK_HELP[L.friend]!);
   out.push(TEXTS.rescue); // a fall can happen on any level; heard first on the earliest
   if (L.deed === 'fetch' && L.item) out.push(TEXTS.pickup(L.item));
   out.push(satisfiedText(L, L.friend));

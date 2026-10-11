@@ -33,10 +33,13 @@ export function loadLevel(gc: GameCtx, i: number): void {
   gc.hideFound = 0;
   gc.hideRun = null;
   gc.chasePhase = 'pup';
+  gc.chaseEscaped = false;
   gc.pleaDone = false;
   gc.firefliesOut = false;
   gc.songPos = 0;
   gc.songDemo = { delay: 2.2, step: -1 };
+  gc.songPhase = 'intro';
+  gc.songHinted = false;
   gc.airWarned = false;
   gc.wingsTiredShown = false;
   gc.prevHeadUnder = false;

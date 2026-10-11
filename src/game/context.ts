@@ -69,10 +69,13 @@ export interface GameCtx {
   hideFound: number; // play levels: how many times the fox was found
   hideRun: { fromX: number; toX: number; t: number; dur: number } | null;
   chasePhase: 'pup' | 'yuna'; // chase levels: who is "it" right now
+  chaseEscaped: boolean; // chase round two: the pup got well away at least once — only then a tag counts
   pleaDone: boolean; // the friend has asked for help AND finished saying it — only then the wished-for things appear
   firefliesOut: boolean; // gather levels: the fireflies have lit up (one-time sparkle)
   songPos: number;
   songDemo: { delay: number; step: number }; // step -1 = not singing right now
+  songPhase: 'intro' | 'sing' | 'answer' | 'encore'; // the duet: who's turn it is
+  songHinted: boolean; // «Теперь ты!» said once
 
   // subtitles
   caption: Caption | null;
@@ -183,10 +186,13 @@ export function createGameCtx(canvas: HTMLCanvasElement): GameCtx {
     hideFound: 0,
     hideRun: null,
     chasePhase: 'pup',
+    chaseEscaped: false,
     pleaDone: false,
     firefliesOut: false,
     songPos: 0,
     songDemo: { delay: 1.2, step: -1 },
+    songPhase: 'intro',
+    songHinted: false,
 
     caption: null,
 

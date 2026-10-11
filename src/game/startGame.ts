@@ -51,6 +51,7 @@ export function startGame(canvas: HTMLCanvasElement): GameDebug {
     fireflies: () => gc.fireflies,
     hideFound: () => gc.hideFound,
     songPos: () => gc.songPos,
+    songPhase: () => gc.songPhase,
     solidAt: (px, py) => solid(gc, Math.floor(px / C.TILE), Math.floor(py / C.TILE)),
   };
 }

@@ -55,8 +55,11 @@ export function updatePlaying(gc: GameCtx, dt: number): void {
   // vertical motion: swim, flutter or fall — always gently
   const jumpHeld = gc.keys.Space || gc.keys.ArrowUp;
   if (inWater) {
-    // hold jump to swim up, otherwise drift slowly down
-    if (jumpHeld) player.vy = Math.max(player.vy - C.SWIM_ACCEL * dt, -C.SWIM_UP);
+    // hold jump to swim up, otherwise drift slowly down. A push off the
+    // seabed (or a shallow ledge) keeps its burst for a moment and then
+    // settles to swim speed — enough to hop one step up onto the shore
+    if (player.vy < -C.SWIM_UP) player.vy += C.SINK * dt;
+    else if (jumpHeld) player.vy = Math.max(player.vy - C.SWIM_ACCEL * dt, -C.SWIM_UP);
     else player.vy = Math.min(player.vy + C.SINK * dt, C.SINK_MAX);
     if (jumpHeld && Math.random() < dt * 4) {
       gc.particles.push({ kind: 'bubble', x: playerCX(player) + (Math.random() - 0.5) * 20, y: player.y, vx: 0, vy: -60, life: 1.1, t: 0 });
@@ -118,9 +121,11 @@ export function updatePlaying(gc: GameCtx, dt: number): void {
     audio.play('jump');
   }
 
-  // breath under water — and the friendly bubble when it runs out
+  // breath under water — and the friendly bubble when it runs out. Once the
+  // deed is done (the celebration runs this update too) the sea itself keeps
+  // Yuna safe: no air running out, no warnings, no bubble lift.
   if (level.water !== undefined) {
-    const headUnder = player.y + 8 > waterY;
+    const headUnder = player.y + 8 > waterY && gc.state === 'PLAYING';
     if (headUnder) {
       player.air = Math.max(0, player.air - dt / C.AIR_TIME);
       if (player.air < 0.3 && !gc.airWarned) {

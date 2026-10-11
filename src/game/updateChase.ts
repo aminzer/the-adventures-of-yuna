@@ -19,6 +19,20 @@ export function updateChase(gc: GameCtx, dt: number): void {
   const player = gc.player;
   const lx = playerCX(player);
   const dx = lx - pup.x;
+  const minX = 2 * T;
+  const maxX = gc.levelW - 2 * T;
+
+  if (gc.chasePhase === 'yuna') {
+    pup.sprintFor = Math.max(0, (pup.sprintFor ?? 0) - dt);
+    pup.breakFor = Math.max(0, (pup.breakFor ?? 0) - dt);
+    // a tag only counts once the pup has really got away after the swap
+    if (!gc.chaseEscaped && Math.abs(dx) > 220) gc.chaseEscaped = true;
+    // cornered against the edge of the meadow: dash back past Yuna
+    if ((pup.x <= minX + 6 || pup.x >= maxX - 6) && pup.breakFor <= 0 && (pup.pauseFor ?? 0) <= 0) {
+      pup.breakFor = 2;
+      pup.breakDir = Math.sign(gc.levelW / 2 - pup.x) || 1;
+    }
+  }
 
   // the game of tag begins when Yuna comes close enough
   if (!pup.fleeing && Math.abs(dx) < C.CHASE_START) {
@@ -58,7 +72,8 @@ export function updateChase(gc: GameCtx, dt: number): void {
     if (pup.retargetIn <= 0) {
       pup.retargetIn = 0.7 + Math.random();
       pup.aimOffset = (Math.random() - 0.5) * C.PUP_AIM_WOBBLE;
-      if (Math.random() < C.PUP_DISTRACT_CHANCE) pup.pauseFor = 0.5 + Math.random() * 0.9;
+      // (no sniffing during the head-start sprint — it has to get away first)
+      if (Math.random() < C.PUP_DISTRACT_CHANCE && (pup.sprintFor ?? 0) <= 0) pup.pauseFor = 0.5 + Math.random() * 0.9;
     }
 
     if ((pup.pauseFor ?? 0) > 0) {
@@ -68,14 +83,21 @@ export function updateChase(gc: GameCtx, dt: number): void {
     } else {
       // round one: run NEAR Yuna; round two: run AWAY from her (the walls
       // of the meadow will corner it in the end)
-      const aim = gc.chasePhase === 'pup' ? lx + (pup.aimOffset ?? 0) : pup.x - Math.sign(dx || 1) * 400 + (pup.aimOffset ?? 0) * 0.3;
-      const want = Math.abs(aim - pup.x) < 12 ? 0 : Math.sign(aim - pup.x) * C.PUP_SPEED;
+      const breaking = gc.chasePhase === 'yuna' && (pup.breakFor ?? 0) > 0;
+      const aim = gc.chasePhase === 'pup'
+        ? lx + (pup.aimOffset ?? 0)
+        : breaking
+          ? pup.x + (pup.breakDir ?? 1) * 600
+          : pup.x - Math.sign(dx || 1) * 400 + (pup.aimOffset ?? 0) * 0.3;
+      // the head start after the swap is a real sprint (Yuna can't keep up for
+      // those seconds); the dash out of a corner is merely quick
+      const boost = gc.chasePhase !== 'yuna' ? 1 : (pup.sprintFor ?? 0) > 0 ? 1.8 : breaking ? 1.45 : 1;
+      const speed = C.PUP_SPEED * boost;
+      const want = Math.abs(aim - pup.x) < 12 ? 0 : Math.sign(aim - pup.x) * speed;
       const dv = want - (pup.vx ?? 0);
       pup.vx = (pup.vx ?? 0) + Math.sign(dv) * Math.min(Math.abs(dv), C.PUP_ACCEL * dt);
       pup.hop = 0; // while running, its real jumps do the bouncing
     }
-    const minX = 2 * T;
-    const maxX = gc.levelW - 2 * T;
     pup.x = Math.max(minX, Math.min(maxX, pup.x + (pup.vx ?? 0) * dt));
 
     // a platform is a real (but temporary) refuge: the pup needs a while to
@@ -100,6 +122,8 @@ export function updateChase(gc: GameCtx, dt: number): void {
       }
       if (gc.chasePhase === 'pup' && playerFeet < pup.y - 40 && Math.abs(dx) < 180 && airClear && (pup.upFor ?? 0) > C.PUP_CLIMB_TIME) {
         pup.vy = -C.PUP_JUMP; // finally worked it out — up it goes!
+      } else if (gc.chasePhase === 'yuna' && (pup.breakFor ?? 0) > 0 && Math.abs(dx) < 90 && airClear) {
+        pup.vy = -C.PUP_JUMP; // leaping right over Yuna on its way out of the corner
       } else if (Math.abs(pup.vx ?? 0) > 40 && airClear) {
         pup.vy = -C.PUP_BOUNCE; // the happy bounding gait
       }
@@ -114,13 +138,14 @@ export function updateChase(gc: GameCtx, dt: number): void {
     if (gc.chasePhase === 'pup') {
       // round one over — now Yuna is "it"; the pup takes a breath, then scampers off
       gc.chasePhase = 'yuna';
-      pup.pauseFor = 1.2;
+      pup.pauseFor = 0.6; // a quick breath…
+      pup.sprintFor = 2.6; // …then a sprint for a head start
       pup.vx = 0;
       pup.bounce = 1;
       audio.play('bark');
       showCaption(gc, TEXTS.chaseSwap, 4);
-    } else if ((pup.pauseFor ?? 0) <= 0.9) {
-      beginGiving(gc, pup); // (not during the breath right after the swap)
+    } else if (gc.chaseEscaped) {
+      beginGiving(gc, pup); // tagged — after a real chase, not on the spot
     }
   }
 }

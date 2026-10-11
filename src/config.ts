@@ -34,13 +34,14 @@ export const C = {
   SINK: 220, // gentle gravity under water
   SINK_MAX: 95, // capped sink speed — drifting down is never scary
   WATER_WALK_MULT: 0.8, // walking on the seabed is a little slower
-  WATER_JUMP_MULT: 0.55, // seabed hops are soft and floaty
+  WATER_JUMP_MULT: 0.7, // seabed hops are soft and floaty — but enough to climb a one-tile step onto the shore
   AIR_TIME: 9, // seconds of breath under water
   AIR_REFILL: 1.5, // seconds at the surface to refill it
   BUBBLE_LIFT_SPEED: 300, // the friendly bubble carries Yuna up this fast
 
   // Song levels — jump on bell-flowers to replay the friend's melody
   BELL_RADIUS: 40, // landing this close to a bell plays it
+  DUET_REMIND: 6, // if Yuna hasn't answered, the lark sings its note again after this long
   DEMO_NOTE_GAP: 0.7, // each demo note flies from the singer to its bell this long
   DEMO_REPEAT: 9, // re-sing the demo after this long without success
 

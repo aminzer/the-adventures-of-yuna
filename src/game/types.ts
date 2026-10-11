@@ -40,6 +40,9 @@ export interface Friend {
   vx?: number; // chase levels: run momentum (it overshoots and skids)
   aimOffset?: number; // chase levels: where it THINKS Yuna is going
   retargetIn?: number; // chase levels: seconds until its next guess
+  sprintFor?: number; // chase levels, round two: head-start sprint after the swap
+  breakFor?: number; // chase levels, round two: cornered — dashing past Yuna to the open side
+  breakDir?: number;
   pauseFor?: number; // chase levels: seconds of being adorably distracted
   upFor?: number; // chase levels: how long Yuna has been up on a platform
 }
@@ -159,6 +162,7 @@ export interface GameDebug {
   fireflies: () => Firefly[];
   hideFound: () => number;
   songPos: () => number;
+  songPhase: () => 'intro' | 'sing' | 'answer' | 'encore';
   /** Is the world tile at this pixel position solid? (for test-bot edge sense) */
   solidAt: (px: number, py: number) => boolean;
 }

@@ -296,7 +296,7 @@ export function renderWorld(gc: GameCtx): void {
   for (const f of gc.friends) {
     const isGiving = gc.state === 'GIVING' && gc.givingFriend === f;
     if (f.satisfied && !isGiving) continue;
-    if ((level.deed === 'fetch' || level.deed === 'gather') && !f.asked) continue; // the wish appears once the friend has asked
+    if ((level.deed === 'fetch' || level.deed === 'gather' || level.deed === 'song') && !f.asked) continue; // the wish appears once the friend has asked
     if (level.deed === 'play' && f.asked && !isGiving) continue; // no bubble over a hiding fox — the ears are the hint
     const heartAmt = isGiving ? Math.min(1, gc.stateT / C.GIVE_TIME) : 0;
     const dwellPulse = level.deed === 'dwell' ? Math.min(0.18, f.dwellT * 0.15) : 0;

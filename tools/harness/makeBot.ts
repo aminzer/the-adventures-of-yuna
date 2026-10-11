@@ -50,14 +50,14 @@ export function makeBot(debug: GameDebug, listeners: Record<string, Listener[]>)
       // no random hopping on the way (a stray stomp is a wrong note)
       if (level.deed === 'song') {
         const singer = debug.friends()[0];
-        if (singer && !singer.satisfied && level.melody) {
+        if (singer && !singer.satisfied && level.melody && singer.asked) {
           const pos = Math.min(debug.songPos(), level.melody.length - 1);
           const bell = debug.bells()[level.melody[pos]];
           if (bell) {
             const dx = bell.x - cx;
             setKey('ArrowRight', dx > 8);
             setKey('ArrowLeft', dx < -8);
-            if (Math.abs(dx) <= 8 && player.onGround && simT - lastJump > 0.6) {
+            if (Math.abs(dx) <= 8 && player.onGround && debug.songPhase() === 'answer' && simT - lastJump > 0.6) {
               lastJump = simT;
               setKey('Space', true);
             }
@@ -132,6 +132,29 @@ export function makeBot(debug: GameDebug, listeners: Record<string, Listener[]>)
         setKey('ArrowRight', tx > cx + 10);
         setKey('ArrowLeft', tx < cx - 10);
         setKey('Space', wantRise);
+        return;
+      }
+
+      // under water with the goal above: hold jump to swim up while steering
+      // (surfacing for air happens by itself — the bubble lift refills it)
+      const inWater = level.water !== undefined && player.y + 12 > level.water * 48;
+      if (inWater && ty !== null && ty < player.y - 30) {
+        const swimDir = tx > cx + 10 ? 1 : tx < cx - 10 ? -1 : 0;
+        setKey('ArrowRight', swimDir > 0);
+        setKey('ArrowLeft', swimDir < 0);
+        const wallAhead = swimDir !== 0 && debug.solidAt(swimDir > 0 ? player.x + player.w + 20 : player.x - 20, player.y + player.h - 10);
+        if (!wallAhead) {
+          setKey('Space', true); // open water: keep swimming up
+        } else if (player.onGround) {
+          // standing on a shallow ledge at the rock: hop up the next step
+          if (simT - lastJump > 0.5) {
+            lastJump = simT;
+            setKey('Space', true);
+          }
+          if (simT - lastJump > 0.3) setKey('Space', false);
+        } else {
+          setKey('Space', false); // let go and sink onto the ledge first
+        }
         return;
       }
 

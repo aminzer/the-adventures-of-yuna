@@ -52,10 +52,10 @@ export function renderUI(gc: GameCtx): void {
     ctx.restore();
   }
 
-  // the melody card (song levels): the notes to play, always visible at the
-  // top of the screen — done ones bright, the NEXT one bouncing (its color
-  // says which bell), the rest waiting dimly
-  if (level.deed === 'song' && level.melody && gc.friends[0] && !gc.friends[0].satisfied) {
+  // the song card (duet levels): the notes found so far — done ones bright,
+  // the one to answer bouncing (its color says which bell), the rest still
+  // unknown; the card appears once the lark has asked for the duet
+  if (level.deed === 'song' && level.melody && gc.friends[0] && gc.friends[0].asked && !gc.friends[0].satisfied) {
     const melody = level.melody;
     const n = melody.length;
     const gap = 40;
@@ -70,8 +70,9 @@ export function renderUI(gc: GameCtx): void {
     ctx.stroke();
     for (let k = 0; k < n; k++) {
       const x = cx - ((n - 1) * gap) / 2 + k * gap;
-      const isNext = k === gc.songPos;
-      const bounce = isNext ? Math.abs(Math.sin(gc.globalT * 4)) * 5 : 0;
+      const encoreAt = gc.songPhase === 'encore' ? gc.songDemo.step - 1 : -1;
+      const isNext = gc.songPhase === 'encore' ? k === encoreAt : k === gc.songPos;
+      const bounce = isNext && (gc.songPhase === 'answer' || gc.songPhase === 'encore') ? Math.abs(Math.sin(gc.globalT * 4)) * 5 : 0;
       ctx.save();
       ctx.translate(x, 42 - bounce);
       if (isNext) {
@@ -79,7 +80,7 @@ export function renderUI(gc: GameCtx): void {
         art.circle(ctx, 0, 0, 17);
         ctx.fill();
       }
-      ctx.globalAlpha = k <= gc.songPos ? 1 : 0.3;
+      ctx.globalAlpha = gc.songPhase === 'encore' || k < gc.songPos ? 1 : k === gc.songPos ? 0.85 : 0.15;
       ctx.scale(1.1, 1.1);
       art.drawNote(ctx, BELL_COLORS[melody[k]]);
       ctx.restore();

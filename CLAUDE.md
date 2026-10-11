@@ -52,6 +52,10 @@ chapters can be added by extending `CHAPTERS`.
   back to the owl); violet = `play` deed
   (hide-and-seek: the fox peeks from bushes, three finds, then runs in for
   the hug). No plain "stand next to the friend" (dwell) levels remain.
+- **The song level is a DUET** (`song` deed): after the lark's plea it sings ONE
+  note onto a bell, Yuna answers on that bell, next note — memory load is one
+  note, a wrong bell just makes the lark sing again; the whole song plays
+  through at the end. Never the old "memorise the whole melody" form.
 - **Rainbow stripes come only from chapter 1** (`ChapterDef.earnsStripe`) —
   exactly the 7 stripes of `C.RAINBOW`; the tutorial and chapter 2 levels
   don't add stripes. The practice level starts in full colour.
